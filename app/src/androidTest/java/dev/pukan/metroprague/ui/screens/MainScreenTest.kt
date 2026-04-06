@@ -1,7 +1,7 @@
 package dev.pukan.metroprague.ui.screens
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -40,7 +40,7 @@ class MainScreenTest {
         composeTestRule.onNodeWithText("Search").performClick()
 
         // Verify Search is displayed
-        composeTestRule.onNodeWithText("Search Screen - Filters").assertExists()
+        composeTestRule.onNodeWithTag("SearchScreen").assertExists()
         // Home should not be displayed
         composeTestRule.onNodeWithText("Home Screen - Favorites").assertDoesNotExist()
     }
