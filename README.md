@@ -28,7 +28,7 @@ The app will use a bottom navigation bar with three primary sections:
 
 Additional UX goals include:
 
-- Material You styling with Material 3 components.
+- Material You styling with Material 3 Expressive components.
 - Light and dark theme support.
 - Accessible controls, descriptions, and touch targets.
 - A responsive, Compose-first user interface.
@@ -43,7 +43,7 @@ Additional UX goals include:
 
 - Kotlin
 - Jetpack Compose
-- Material 3
+- Material 3 Expressive
 - Navigation Compose with type-safe, serializable routes
 - Kotlin Coroutines and Flow for asynchronous state
 - MVVM with unidirectional data flow
