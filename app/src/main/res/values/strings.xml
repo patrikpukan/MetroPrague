@@ -1,3 +1,47 @@
 <resources>
     <string name="app_name">MetroPrague</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+
+    <!-- Settings section headers -->
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_language">Language</string>
+    <string name="settings_section_about">About</string>
+
+    <!-- Settings row labels -->
+    <string name="settings_theme_label">Theme</string>
+    <string name="settings_language_label">Language</string>
+    <string name="settings_changelog_label">Changelog</string>
+    <string name="settings_version_label">App version</string>
+
+    <!-- Theme options -->
+    <string name="settings_theme_system">System default</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+
+    <!-- Language options -->
+    <string name="settings_language_system">System default</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_czech">Czech</string>
+
+    <!-- Dialog titles -->
+    <string name="settings_theme_dialog_title">Theme</string>
+    <string name="settings_language_dialog_title">Language</string>
+    <string name="settings_changelog_dialog_title">Changelog</string>
+
+    <!-- Dialog action buttons -->
+    <string name="settings_dialog_dismiss">Cancel</string>
+    <string name="settings_dialog_close">Close</string>
+
+    <!-- Version display: "1.0 (1)" -->
+    <string name="settings_version_format">%1$s (%2$d)</string>
+
+    <!-- Changelog version heading -->
+    <string name="settings_changelog_version_heading">Version %1$s</string>
+
+    <!-- Changelog notes for version 1.0 -->
+    <string name="settings_changelog_1_0_note_1">Initial release.</string>
+    <string name="settings_changelog_1_0_note_2">Metro Prague line and station search.</string>
+    <string name="settings_changelog_1_0_note_3">Theme and language preferences.</string>
 </resources>

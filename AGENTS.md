@@ -5,9 +5,9 @@
 - Single Android app module in `app/` using Gradle Kotlin DSL (`build.gradle.kts`,
   `settings.gradle.kts`, `gradle/libs.versions.toml` for version catalog).
 - Source sets live under `app/src/main` with `AndroidManifest.xml` and `res/` for UI assets; Kotlin
-  sources will live in `app/src/main/java/tech/pukan/metroidprg`.
-- Tests: JVM unit tests in `app/src/test/java/tech/pukan/metroidprg`, instrumentation tests in
-  `app/src/androidTest/java/tech/pukan/metroidprg`.
+  sources will live in `app/src/main/java/dev/pukan/metroprague`.
+- Tests: JVM unit tests in `app/src/test/java/dev/pukan/metroprague`, instrumentation tests in
+  `app/src/androidTest/java/dev/pukan/metroprague`.
 - Generated outputs land in `app/build/`; keep this directory untracked. Keep local SDK paths and
   secrets in `local.properties` (already gitignored).
 
@@ -29,8 +29,8 @@
   imports. Align with Android/Kotlin style defaults.
 - Names: `PascalCase` for classes/objects, `camelCase` for functions/vars, `UPPER_SNAKE_CASE` for
   const vals. Resource files stick to `snake_case`.
-- Packages stay under `tech.pukan.metroidprg`; avoid creating parallel namespaces. Add dependencies
-  through `gradle/libs.versions.toml` so versions remain centralized.
+- Packages stay under `dev.pukan.metroprague`; avoid creating parallel namespaces.
+- Add dependencies through `gradle/libs.versions.toml` so versions remain centralized.
 - UI approach: Compose-first. Do not introduce XML layouts, ViewBinding, Fragments, or
   `findViewById` unless explicitly requested.
 - Composable naming: use `PascalCase` screen/component names (for example, `HomeScreen`,

@@ -13,7 +13,7 @@ import dev.pukan.metroprague.ui.navigation.SearchRoute
 import dev.pukan.metroprague.ui.navigation.SettingsRoute
 import dev.pukan.metroprague.ui.screens.home.HomeScreen
 import dev.pukan.metroprague.ui.screens.search.SearchScreen
-import dev.pukan.metroprague.ui.screens.settings.SettingsScreen
+import dev.pukan.metroprague.ui.screens.settings.SettingsScreenRoute
 
 @Composable
 fun MainScreen() {
@@ -29,7 +29,7 @@ fun MainScreen() {
         ) {
             composable<HomeRoute> { HomeScreen() }
             composable<SearchRoute> { SearchScreen() }
-            composable<SettingsRoute> { SettingsScreen() }
+            composable<SettingsRoute> { SettingsScreenRoute() }
         }
     }
 }
