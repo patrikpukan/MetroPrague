@@ -293,6 +293,75 @@ composeTestRule.onNodeWithTag("my_box").assertIsDisplayed()
 **Do:** Use unique, descriptive test tags.
 **Don't:** Use test tags in production code for business logic.
 
+## Review Checklist: Modifier Ordering Bugs
+
+### Hardcoded Size After Caller's `modifier` Parameter
+
+When a composable accepts `modifier: Modifier = Modifier` and chains fixed `.height()` / `.width()` / `.size()` after it, caller size constraints are silently ignored or clamped.
+
+```kotlin
+// BAD: caller's height is outer constraint, component's 172.dp is inner — component always renders at 172dp
+@Composable
+fun BannerCard(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier          // caller constraints applied first (outer)
+            .fillMaxWidth()
+            .height(172.dp)          // inner — wins when smaller, clamped when larger
+            .clip(RoundedCornerShape(18.dp))
+            .background(Color.Green.copy(alpha = 0.08f)),
+    )
+}
+
+// Caller expects 200dp but gets 172dp:
+BannerCard(modifier = Modifier.height(200.dp))
+
+// Caller expects 100dp — component gets clamped/squished:
+BannerCard(modifier = Modifier.height(100.dp))
+```
+
+**Why it happens:** Modifier chain resolves outer-to-inner (left-to-right). Outer constraint sets max bounds, inner constraint requests within those bounds. First size constraint wins as the ceiling.
+
+**Fix option 1:** Component defaults first, caller can override via `.then(modifier)`:
+```kotlin
+// GOOD: component sets defaults, caller's modifier applied last and can override
+@Composable
+fun BannerCard(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(172.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(Color.Green.copy(alpha = 0.08f))
+            .then(modifier),         // caller can override size
+    )
+}
+```
+
+**Fix option 2:** Use `defaultMinSize` for flexible sizing:
+```kotlin
+// GOOD: minimum guaranteed, caller can make it larger
+@Composable
+fun BannerCard(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 172.dp)  // floor, not ceiling
+            .clip(RoundedCornerShape(18.dp))
+            .background(Color.Green.copy(alpha = 0.08f)),
+    )
+}
+```
+
+**Rule:** When a composable accepts `modifier: Modifier = Modifier`, never chain fixed `.height()` / `.width()` / `.size()` after the caller's modifier — caller constraints become outer bounds and the component's fixed size either ignores or gets clamped by them. Use `.then(modifier)` at the end or `defaultMinSize` for flexible sizing. Flag in every PR review.
+
+---
+
 ## Anti-patterns
 
 ### Creating Modifiers in Composition
