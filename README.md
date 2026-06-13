@@ -145,3 +145,7 @@ through build configuration or dependency injection.
 Metro Prague is under active development. Planned functionality and navigation
 sections may change as transport data sources and product requirements are
 defined.
+
+## License
+
+This project is licensed under the Apache License, Version 2.0.
