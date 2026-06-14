@@ -11,6 +11,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
@@ -22,6 +23,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dev.pukan.metroprague.domain.model.ThemePreference
 import dev.pukan.metroprague.ui.theme.MetroPragueTheme
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -200,5 +202,22 @@ class SettingsScreenTest {
         onNodeWithText("Close").performClick()
 
         onNodeWithText("Version 1.0").assertDoesNotExist()
+    }
+
+    // --- Segmented item semantics tests ---
+
+    @Test
+    fun versionRow_isNotClickable() = runComposeUiTest {
+        setStatelessContent()
+        onNodeWithText("App version").assertHasNoClickAction()
+    }
+
+    @Test
+    fun settingsRows_eachHaveExactlyOneClickTarget() = runComposeUiTest {
+        setStatelessContent()
+        // Each row should be a single click target — SegmentedListItem merges semantics so
+        // there are no duplicate child click actions within a row.
+        onAllNodes(hasClickAction() and hasText("Theme", substring = true)).assertCountEquals(1)
+        onAllNodes(hasClickAction() and hasText("Changelog", substring = true)).assertCountEquals(1)
     }
 }

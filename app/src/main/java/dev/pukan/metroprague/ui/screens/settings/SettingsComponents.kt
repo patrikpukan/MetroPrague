@@ -1,34 +1,123 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package dev.pukan.metroprague.ui.screens.settings
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SegmentedListItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.pukan.metroprague.R
+import dev.pukan.metroprague.domain.model.ThemePreference
 import dev.pukan.metroprague.ui.theme.MetroPragueTheme
+
+// --- Item models ---
+
+sealed interface SettingsGroupItem {
+    data class Clickable(
+        val icon: ImageVector,
+        val title: String,
+        val onClick: () -> Unit,
+        val summary: String? = null,
+    ) : SettingsGroupItem
+
+    data class Info(
+        val icon: ImageVector,
+        val title: String,
+        val summary: String,
+    ) : SettingsGroupItem
+}
+
+// --- Segmented group component ---
+
+@Composable
+fun SettingsGroup(
+    items: List<SettingsGroupItem>,
+    modifier: Modifier = Modifier,
+) {
+    val count = items.size
+    Column(modifier = modifier) {
+        items.forEachIndexed { index, item ->
+            if (index > 0) {
+                Spacer(modifier = Modifier.height(ListItemDefaults.SegmentedGap))
+            }
+            val shapes = ListItemDefaults.segmentedShapes(index, count)
+            when (item) {
+                is SettingsGroupItem.Clickable -> SegmentedListItem(
+                    onClick = item.onClick,
+                    shapes = shapes,
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingContent = {
+                        Icon(imageVector = item.icon, contentDescription = null)
+                    },
+                    trailingContent = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                            contentDescription = null,
+                        )
+                    },
+                    supportingContent = item.summary?.let { s -> { Text(s) } },
+                ) {
+                    Text(item.title)
+                }
+
+                is SettingsGroupItem.Info -> {
+                    val segmentedColors = ListItemDefaults.segmentedColors()
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = shapes.shape,
+                        color = segmentedColors.containerColor(
+                            enabled = true,
+                            selected = false,
+                            dragged = false,
+                        ),
+                    ) {
+                        ListItem(
+                            headlineContent = { Text(item.title) },
+                            leadingContent = {
+                                Icon(imageVector = item.icon, contentDescription = null)
+                            },
+                            supportingContent = { Text(item.summary) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            tonalElevation = 0.dp,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// --- Section heading ---
 
 @Composable
 fun SettingsSectionHeading(
@@ -43,46 +132,7 @@ fun SettingsSectionHeading(
     )
 }
 
-@Composable
-fun SettingsClickableRow(
-    icon: ImageVector,
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    summary: String? = null,
-) {
-    ListItem(
-        headlineContent = { Text(title) },
-        supportingContent = summary?.let { { Text(it) } },
-        leadingContent = {
-            Icon(imageVector = icon, contentDescription = null)
-        },
-        trailingContent = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                contentDescription = null,
-            )
-        },
-        modifier = modifier.clickable(role = Role.Button, onClick = onClick),
-    )
-}
-
-@Composable
-fun SettingsInfoRow(
-    icon: ImageVector,
-    title: String,
-    summary: String,
-    modifier: Modifier = Modifier,
-) {
-    ListItem(
-        headlineContent = { Text(title) },
-        supportingContent = { Text(summary) },
-        leadingContent = {
-            Icon(imageVector = icon, contentDescription = null)
-        },
-        modifier = modifier,
-    )
-}
+// --- Choice dialog ---
 
 @Composable
 fun <T> SingleChoiceDialog(
@@ -146,37 +196,38 @@ private fun SettingsSectionHeadingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun SettingsClickableRowWithSummaryPreview() {
+private fun OneItemGroupPreview() {
     MetroPragueTheme(dynamicColor = false) {
-        SettingsClickableRow(
-            icon = Icons.Outlined.DarkMode,
-            title = "Theme",
-            summary = "System default",
-            onClick = {},
+        SettingsGroup(
+            items = listOf(
+                SettingsGroupItem.Clickable(
+                    icon = Icons.Outlined.DarkMode,
+                    title = "Theme",
+                    summary = "System default",
+                    onClick = {},
+                )
+            )
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun SettingsClickableRowNoSummaryPreview() {
+private fun TwoItemGroupPreview() {
     MetroPragueTheme(dynamicColor = false) {
-        SettingsClickableRow(
-            icon = Icons.Outlined.Language,
-            title = "Changelog",
-            onClick = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SettingsInfoRowPreview() {
-    MetroPragueTheme(dynamicColor = false) {
-        SettingsInfoRow(
-            icon = Icons.Outlined.Info,
-            title = "App version",
-            summary = "1.0 (1)",
+        SettingsGroup(
+            items = listOf(
+                SettingsGroupItem.Clickable(
+                    icon = Icons.AutoMirrored.Outlined.Article,
+                    title = "Changelog",
+                    onClick = {},
+                ),
+                SettingsGroupItem.Info(
+                    icon = Icons.Outlined.Info,
+                    title = "App version",
+                    summary = "1.0 (1)",
+                ),
+            )
         )
     }
 }

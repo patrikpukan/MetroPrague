@@ -2,8 +2,6 @@ package dev.pukan.metroprague.ui.screens.settings
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -23,7 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.pukan.metroprague.R
+import dev.pukan.metroprague.domain.model.ThemePreference
 import dev.pukan.metroprague.ui.theme.MetroPragueTheme
 
 @Composable
@@ -43,34 +44,49 @@ fun SettingsScreen(
             .verticalScroll(rememberScrollState()),
     ) {
         SettingsSectionHeading(title = stringResource(R.string.settings_section_appearance))
-        SettingsClickableRow(
-            icon = Icons.Outlined.DarkMode,
-            title = stringResource(R.string.settings_theme_label),
-            summary = state.theme.label(),
-            onClick = onOpenThemeSelection,
+        SettingsGroup(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            items = listOf(
+                SettingsGroupItem.Clickable(
+                    icon = Icons.Outlined.DarkMode,
+                    title = stringResource(R.string.settings_theme_label),
+                    summary = state.theme.label(),
+                    onClick = onOpenThemeSelection,
+                ),
+            ),
         )
 
         SettingsSectionHeading(title = stringResource(R.string.settings_section_language))
-        SettingsClickableRow(
-            icon = Icons.Outlined.Language,
-            title = stringResource(R.string.settings_language_label),
-            summary = state.language.label(),
-            onClick = onOpenLanguageSelection,
+        SettingsGroup(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            items = listOf(
+                SettingsGroupItem.Clickable(
+                    icon = Icons.Outlined.Language,
+                    title = stringResource(R.string.settings_language_label),
+                    summary = state.language.label(),
+                    onClick = onOpenLanguageSelection,
+                ),
+            ),
         )
 
         SettingsSectionHeading(title = stringResource(R.string.settings_section_about))
-        SettingsClickableRow(
-            icon = Icons.AutoMirrored.Outlined.Article,
-            title = stringResource(R.string.settings_changelog_label),
-            onClick = onOpenChangelog,
-        )
-        SettingsInfoRow(
-            icon = Icons.Outlined.Info,
-            title = stringResource(R.string.settings_version_label),
-            summary = stringResource(
-                R.string.settings_version_format,
-                state.versionName,
-                state.versionCode,
+        SettingsGroup(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            items = listOf(
+                SettingsGroupItem.Clickable(
+                    icon = Icons.AutoMirrored.Outlined.Article,
+                    title = stringResource(R.string.settings_changelog_label),
+                    onClick = onOpenChangelog,
+                ),
+                SettingsGroupItem.Info(
+                    icon = Icons.Outlined.Info,
+                    title = stringResource(R.string.settings_version_label),
+                    summary = stringResource(
+                        R.string.settings_version_format,
+                        state.versionName,
+                        state.versionCode,
+                    ),
+                ),
             ),
         )
     }
@@ -151,7 +167,7 @@ private fun AppLanguage.label(): String = when (this) {
 
 @Composable
 fun SettingsScreenRoute(
-    viewModel: SettingsViewModel = viewModel(),
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     SettingsScreen(
