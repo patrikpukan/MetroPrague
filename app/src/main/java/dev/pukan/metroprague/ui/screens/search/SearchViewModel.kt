@@ -1,12 +1,8 @@
 package dev.pukan.metroprague.ui.screens.search
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import dev.pukan.metroprague.MetroPragueApplication
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.pukan.metroprague.domain.model.Line
 import dev.pukan.metroprague.domain.model.Station
 import dev.pukan.metroprague.domain.repository.StationRepository
@@ -15,8 +11,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class SearchViewModel(
+@HiltViewModel
+class SearchViewModel @Inject constructor(
     private val repository: StationRepository
 ) : ViewModel() {
 
@@ -48,19 +46,9 @@ class SearchViewModel(
 
     fun onLineFilterChange(line: Line?) {
         if (_selectedLine.value == line) {
-            _selectedLine.value = null // Toggle off if already selected
+            _selectedLine.value = null
         } else {
             _selectedLine.value = line
-        }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as MetroPragueApplication)
-                val stationRepository = application.container.stationRepository
-                SearchViewModel(repository = stationRepository)
-            }
         }
     }
 }

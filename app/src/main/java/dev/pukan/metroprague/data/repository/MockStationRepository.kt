@@ -5,8 +5,9 @@ import dev.pukan.metroprague.domain.model.Station
 import dev.pukan.metroprague.domain.repository.StationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import javax.inject.Inject
 
-class MockStationRepository : StationRepository {
+class MockStationRepository @Inject constructor() : StationRepository {
     private val stations = listOf(
         Station("a1", "Dejvická", Line.A),
         Station("a2", "Hradčanská", Line.A),

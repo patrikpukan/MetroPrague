@@ -32,13 +32,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dev.pukan.metroprague.domain.model.Line
 import dev.pukan.metroprague.domain.model.Station
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory)) {
+fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedLine by viewModel.selectedLine.collectAsState()
     val stations by viewModel.filteredStations.collectAsState()

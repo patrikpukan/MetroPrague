@@ -1,6 +1,6 @@
 package dev.pukan.metroprague.ui.screens.settings
 
-enum class ThemePreference { System, Light, Dark }
+import dev.pukan.metroprague.domain.model.ThemePreference
 
 enum class AppLanguage { System, English, Czech }
 
