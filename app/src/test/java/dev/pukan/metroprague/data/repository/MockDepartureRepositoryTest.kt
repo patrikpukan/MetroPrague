@@ -51,6 +51,20 @@ class MockDepartureRepositoryTest {
     }
 
     @Test
+    fun `mocked boards include delayed trips across successive departures`() = runTest {
+        val firstInstant = Instant.parse("2026-01-15T07:00:00Z")
+        val departures = (0..5).flatMap { step ->
+            repositoryAt(firstInstant.plusSeconds(step * 120L))
+                .getDepartureBoard("andel")
+                .first()
+                .departures
+        }
+
+        assertTrue(departures.any { it.delaySeconds == 60 && it.predicted == it.scheduled.plusSeconds(60) })
+        assertTrue(departures.any { it.delaySeconds == 0 })
+    }
+
+    @Test
     fun `no-service window produces an empty board`() = runTest {
         val board = repositoryAt(Instant.parse("2026-01-15T01:00:00Z"))
             .getDepartureBoard("andel")
@@ -122,8 +136,8 @@ class MockDepartureRepositoryTest {
         headsign: String,
     ): List<Long> = departures
         .filter { it.headsign == headsign }
-        .sortedBy { it.effectiveTime }
+        .sortedBy { it.scheduled }
         .zipWithNext { first, second ->
-            Duration.between(first.effectiveTime, second.effectiveTime).seconds
+            Duration.between(first.scheduled, second.scheduled).seconds
         }
 }

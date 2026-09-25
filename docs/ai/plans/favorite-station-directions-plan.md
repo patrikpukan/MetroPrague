@@ -149,7 +149,8 @@ it exposes **both a scheduled and a predicted timestamp plus a delay**.
   lockstep: `offsetSeconds = (stationId + terminusStationId).hashCode().absoluteValue % headwaySeconds`.
 - **D14.** Departures are generated per direction, three per direction, merged into one board and
   sorted ascending by effective departure time.
-- **D15.** Mock delay: every trip whose index within its direction is a multiple of 5 gets
+- **D15.** Mock delay: every fifth trip slot per direction, numbered from the scheduled local time
+  and current headway rather than the index in the three-departure board, gets
   `delaySeconds = 60`; all others get `0`. `predicted = scheduled + delaySeconds`. `isCanceled` is
   always `false` in the mock. `isAtStop` is `true` when the effective time is within 30 seconds of
   now.

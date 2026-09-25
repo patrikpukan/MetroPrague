@@ -140,18 +140,14 @@ class SearchViewModel @Inject constructor(
             line = direction.line,
             terminusStationId = direction.terminusStationId,
         )
-        val isFavorite = sheetState.value
+        val isDisplayedDirection = sheetState.value
             ?.directions
-            ?.firstOrNull { it.direction == direction }
-            ?.isFavorite
-            ?: return
+            ?.any { it.direction == direction }
+            ?: false
+        if (!isDisplayedDirection) return
 
         viewModelScope.launch {
-            if (isFavorite) {
-                favoritesRepository.remove(key)
-            } else {
-                favoritesRepository.add(key)
-            }
+            favoritesRepository.toggle(key)
         }
     }
 }

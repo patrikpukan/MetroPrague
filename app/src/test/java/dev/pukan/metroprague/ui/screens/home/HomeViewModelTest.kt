@@ -177,5 +177,13 @@ class HomeViewModelTest {
         override suspend fun remove(key: FavoriteKey) {
             favorites.value = favorites.value.filterNot { it == key }
         }
+
+        override suspend fun toggle(key: FavoriteKey) {
+            favorites.value = if (key in favorites.value) {
+                favorites.value.filterNot { it == key }
+            } else {
+                favorites.value + key
+            }
+        }
     }
 }

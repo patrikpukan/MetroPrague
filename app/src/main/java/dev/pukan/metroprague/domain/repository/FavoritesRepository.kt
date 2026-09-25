@@ -7,4 +7,5 @@ interface FavoritesRepository {
     val favorites: Flow<List<FavoriteKey>>
     suspend fun add(key: FavoriteKey)
     suspend fun remove(key: FavoriteKey)
+    suspend fun toggle(key: FavoriteKey)
 }

@@ -9,12 +9,15 @@ import dev.pukan.metroprague.domain.model.FavoriteKey
 import dev.pukan.metroprague.domain.model.Line
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -99,6 +102,25 @@ class DataStoreFavoritesRepositoryTest {
         val secondRepository = DataStoreFavoritesRepository(dataStore)
 
         assertEquals(listOf(muzeumToMotol), secondRepository.favorites.first())
+    }
+
+    @Test
+    fun `concurrent toggles preserve both tap events`() = testScope.runTest {
+        coroutineScope {
+            repeat(2) {
+                launch { repository.toggle(muzeumToMotol) }
+            }
+        }
+
+        assertEquals(emptyList<FavoriteKey>(), repository.favorites.first())
+    }
+
+    @Test
+    fun `stored json includes schema version`() = testScope.runTest {
+        repository.add(muzeumToMotol)
+
+        val encoded = dataStore.data.first()[stringPreferencesKey("favorites_v1")]
+        assertTrue(encoded?.contains("\"version\":1") == true)
     }
 
     @Test

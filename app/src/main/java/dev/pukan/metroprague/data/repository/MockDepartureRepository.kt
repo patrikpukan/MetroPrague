@@ -104,7 +104,8 @@ private fun buildDirectionDepartures(
         }
 
         val scheduled = localScheduled.atZone(zoneId).toInstant()
-        val delaySeconds = if (index % DELAY_TRIP_INTERVAL == 0) {
+        val tripNumber = scheduledSeconds / headwaySeconds.toLong() + 1
+        val delaySeconds = if (tripNumber % DELAY_TRIP_INTERVAL == 0L) {
             DELAY_SECONDS
         } else {
             0

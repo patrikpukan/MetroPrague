@@ -25,7 +25,10 @@ class DataStoreFavoritesRepository @Inject constructor(
 ) : FavoritesRepository {
 
     private val favoritesKey = stringPreferencesKey("favorites_v1")
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
 
     override val favorites: Flow<List<FavoriteKey>> =
         dataStore.data
@@ -53,6 +56,15 @@ class DataStoreFavoritesRepository @Inject constructor(
         dataStore.edit { preferences ->
             val current = decode(preferences[favoritesKey])
             preferences[favoritesKey] = encode(current.filterNot { it == key })
+        }
+    }
+
+    override suspend fun toggle(key: FavoriteKey) {
+        dataStore.edit { preferences ->
+            val current = decode(preferences[favoritesKey])
+            preferences[favoritesKey] = encode(
+                if (key in current) current.filterNot { it == key } else current + key,
+            )
         }
     }
 

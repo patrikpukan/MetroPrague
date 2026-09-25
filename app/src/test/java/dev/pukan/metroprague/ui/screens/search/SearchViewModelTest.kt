@@ -18,8 +18,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -145,6 +147,24 @@ class SearchViewModelTest {
         assertFalse(rowFor(viewModel, direction.terminusStationId).isFavorite)
     }
 
+    @Test
+    fun `two taps before favorite state updates cancel each other`() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val favoritesRepository = FakeFavoritesRepository()
+        val viewModel = viewModel(favoritesRepository)
+        collectSheetState(viewModel)
+        viewModel.onStationSelected(muzeum)
+        runCurrent()
+        val direction = checkNotNull(viewModel.sheetState.value).directions.first().direction
+
+        viewModel.onToggleFavorite(direction)
+        viewModel.onToggleFavorite(direction)
+        runCurrent()
+
+        assertTrue(favoritesRepository.favorites.value.isEmpty())
+        assertFalse(rowFor(viewModel, direction.terminusStationId).isFavorite)
+    }
+
     private fun kotlinx.coroutines.test.TestScope.collectSheetState(viewModel: SearchViewModel) {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.sheetState.collect {}
@@ -182,6 +202,14 @@ class SearchViewModelTest {
 
         override suspend fun remove(key: FavoriteKey) {
             favorites.value = favorites.value.filterNot { it == key }
+        }
+
+        override suspend fun toggle(key: FavoriteKey) {
+            favorites.value = if (key in favorites.value) {
+                favorites.value.filterNot { it == key }
+            } else {
+                favorites.value + key
+            }
         }
     }
 }
