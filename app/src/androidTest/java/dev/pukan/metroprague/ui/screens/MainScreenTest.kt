@@ -37,7 +37,7 @@ class MainScreenTest {
             }
         }
 
-        composeRule.onNodeWithText("Home Screen - Favorites").assertExists()
+        composeRule.onNodeWithTag("HomeScreen").assertExists()
     }
 
     @Test
@@ -51,7 +51,7 @@ class MainScreenTest {
         composeRule.onNodeWithText("Search").performClick()
 
         composeRule.onNodeWithTag("SearchScreen").assertExists()
-        composeRule.onNodeWithText("Home Screen - Favorites").assertDoesNotExist()
+        composeRule.onNodeWithTag("HomeScreen").assertDoesNotExist()
     }
 
     @Test
@@ -65,6 +65,6 @@ class MainScreenTest {
         composeRule.onNodeWithText("Settings").performClick()
 
         composeRule.onNodeWithText("Appearance").assertExists()
-        composeRule.onNodeWithText("Home Screen - Favorites").assertDoesNotExist()
+        composeRule.onNodeWithTag("HomeScreen").assertDoesNotExist()
     }
 }

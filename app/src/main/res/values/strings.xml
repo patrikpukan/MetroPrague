@@ -1,6 +1,28 @@
 <resources>
     <string name="app_name">MetroPrague</string>
 
+    <!-- Departures -->
+    <string name="departure_no_service">No service</string>
+    <string name="departure_cancelled">Cancelled</string>
+    <string name="departure_at_station">At station</string>
+    <string name="departure_now">Now</string>
+    <string name="departure_in_minutes">%1$d min</string>
+    <string name="departure_at_time">%1$02d:%2$02d</string>
+    <string name="direction_toward">To %1$s</string>
+    <string name="line_label">Line %1$s</string>
+
+    <!-- Direction picker -->
+    <string name="direction_picker_title">Choose a direction</string>
+    <string name="direction_picker_close">Close</string>
+    <string name="favorite_add">Add to favorites</string>
+    <string name="favorite_remove">Remove from favorites</string>
+
+    <!-- Home -->
+    <string name="home_title">Favorites</string>
+    <string name="home_empty_title">No favorites yet</string>
+    <string name="home_empty_body">Search for a station and pick a direction to add it here.</string>
+    <string name="home_empty_action">Search stations</string>
+
     <!-- Settings screen -->
     <string name="settings_title">Settings</string>
 
