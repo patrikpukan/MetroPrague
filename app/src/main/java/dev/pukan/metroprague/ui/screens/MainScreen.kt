@@ -11,8 +11,8 @@ import dev.pukan.metroprague.ui.navigation.BottomNavigationBar
 import dev.pukan.metroprague.ui.navigation.HomeRoute
 import dev.pukan.metroprague.ui.navigation.SearchRoute
 import dev.pukan.metroprague.ui.navigation.SettingsRoute
-import dev.pukan.metroprague.ui.screens.home.HomeScreen
-import dev.pukan.metroprague.ui.screens.search.SearchScreen
+import dev.pukan.metroprague.ui.screens.home.HomeScreenRoute
+import dev.pukan.metroprague.ui.screens.search.SearchScreenRoute
 import dev.pukan.metroprague.ui.screens.settings.SettingsScreenRoute
 
 @Composable
@@ -27,8 +27,16 @@ fun MainScreen() {
             startDestination = HomeRoute,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable<HomeRoute> { HomeScreen() }
-            composable<SearchRoute> { SearchScreen() }
+            composable<HomeRoute> {
+                HomeScreenRoute(
+                    onNavigateToSearch = {
+                        navController.navigate(SearchRoute) {
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+            composable<SearchRoute> { SearchScreenRoute() }
             composable<SettingsRoute> { SettingsScreenRoute() }
         }
     }
