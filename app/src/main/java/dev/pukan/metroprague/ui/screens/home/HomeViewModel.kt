@@ -11,6 +11,7 @@ import dev.pukan.metroprague.domain.model.forDirection
 import dev.pukan.metroprague.domain.repository.DepartureRepository
 import dev.pukan.metroprague.domain.repository.FavoritesRepository
 import dev.pukan.metroprague.domain.repository.StationRepository
+import dev.pukan.metroprague.ui.model.DepartureDisplay
 import dev.pukan.metroprague.ui.model.toDisplay
 import java.time.Clock
 import java.time.Instant
@@ -49,16 +50,18 @@ class HomeViewModel @Inject constructor(
                     isLoading = false,
                     favorites = resolvedFavorites.map { favorite ->
                         val board = boardsByStationId.getValue(favorite.station.id)
+                        val nextDeparture = board.forDirection(favorite.direction).firstOrNull()
                         FavoriteCardUiState(
                             key = favorite.key,
                             stationName = favorite.station.name,
                             lineLetter = favorite.direction.line.name,
                             lineColorHex = favorite.direction.line.colorHex,
-                            terminusName = favorite.direction.terminusName,
-                            nextDeparture = board
-                                .forDirection(favorite.direction)
-                                .firstOrNull()
-                                .toDisplay(Instant.now(clock), clock.zone),
+                            terminusName = nextDeparture?.headsign ?: favorite.direction.terminusName,
+                            nextDeparture = if (board.isUnavailable) {
+                                DepartureDisplay.Unavailable
+                            } else {
+                                nextDeparture.toDisplay(Instant.now(clock), clock.zone)
+                            },
                         )
                     },
                 )

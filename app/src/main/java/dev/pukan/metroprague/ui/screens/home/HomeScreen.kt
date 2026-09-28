@@ -189,6 +189,7 @@ fun FavoriteCard(
 @Composable
 private fun DepartureDisplay.label(): String = when (this) {
     DepartureDisplay.NoService -> stringResource(R.string.departure_no_service)
+    DepartureDisplay.Unavailable -> stringResource(R.string.departure_unavailable)
     DepartureDisplay.Cancelled -> stringResource(R.string.departure_cancelled)
     DepartureDisplay.AtStation -> stringResource(R.string.departure_at_station)
     DepartureDisplay.Now -> stringResource(R.string.departure_now)

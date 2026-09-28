@@ -38,6 +38,7 @@ data class DirectionRowUiState(
     val lineColorHex: Long,
     val nextDeparture: DepartureDisplay,
     val isFavorite: Boolean,
+    val destinationName: String = direction.terminusName,
 )
 
 @HiltViewModel
@@ -88,14 +89,17 @@ class SearchViewModel @Inject constructor(
                     DirectionSheetUiState(
                         stationName = station.name,
                         directions = stations.directionsAt(station).map { direction ->
+                            val nextDeparture = board.forDirection(direction).firstOrNull()
                             DirectionRowUiState(
                                 direction = direction,
                                 lineLetter = direction.line.name,
                                 lineColorHex = direction.line.colorHex,
-                                nextDeparture = board
-                                    .forDirection(direction)
-                                    .firstOrNull()
-                                    .toDisplay(Instant.now(clock), clock.zone),
+                                nextDeparture = if (board.isUnavailable) {
+                                    DepartureDisplay.Unavailable
+                                } else {
+                                    nextDeparture.toDisplay(Instant.now(clock), clock.zone)
+                                },
+                                destinationName = nextDeparture?.headsign ?: direction.terminusName,
                                 isFavorite = FavoriteKey(
                                     stationId = station.id,
                                     line = direction.line,

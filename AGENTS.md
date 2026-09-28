@@ -90,14 +90,15 @@
 ## Jetpack Compose Expert
 
 For all Jetpack Compose tasks, follow the workflow and checklists in
-`.agents/skills/compose-expert/SKILL.md`.
+`.agents/skills/compose-expert/skills/compose-expert/SKILL.md`.
 
 Before answering any Compose question, consult the relevant reference:
 
-- State management -> `.agents/skills/compose-expert/references/state-management.md`
-- Performance -> `.agents/skills/compose-expert/references/performance.md`
-- Navigation -> `.agents/skills/compose-expert/references/navigation.md`
+- State management ->
+  `.agents/skills/compose-expert/skills/compose-expert/references/state-management.md`
+- Performance -> `.agents/skills/compose-expert/skills/compose-expert/references/performance.md`
+- Navigation -> `.agents/skills/compose-expert/skills/compose-expert/references/navigation.md`
 - (see SKILL.md for the full topic -> file mapping)
 
 For implementation details, check actual source code in
-`.agents/skills/compose-expert/references/source-code/`.
+`.agents/skills/compose-expert/skills/compose-expert/references/source-code/`.

@@ -50,7 +50,7 @@ fun DirectionPickerSheet(
                     DirectionRow(
                         directionLabel = stringResource(
                             R.string.direction_toward,
-                            rowState.direction.terminusName,
+                            rowState.destinationName,
                         ),
                         lineLetter = rowState.lineLetter,
                         lineColor = Color(rowState.lineColorHex),

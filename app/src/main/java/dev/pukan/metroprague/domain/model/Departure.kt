@@ -16,6 +16,7 @@ data class Departure(
     val delaySeconds: Int?,
     val isAtStop: Boolean,
     val isCanceled: Boolean,
+    val directionTerminusStationId: String? = null,
 ) {
     val effectiveTime: Instant get() = predicted ?: scheduled
 }
@@ -24,12 +25,15 @@ data class DepartureBoard(
     val stationId: String,
     val departures: List<Departure>,
     val infoTexts: List<String> = emptyList(),
+    val isUnavailable: Boolean = false,
 )
 
 fun DepartureBoard.forDirection(direction: Direction): List<Departure> {
-    // Real data contains short-turn trips whose headsign is not a line terminus. The
-    // position-based fallback for those trips belongs in this function.
     return departures.filter {
-        it.line == direction.line && it.headsign == direction.terminusName
+        it.line == direction.line && if (it.directionTerminusStationId == null) {
+            it.headsign == direction.terminusName
+        } else {
+            it.directionTerminusStationId == direction.terminusStationId
+        }
     }
 }

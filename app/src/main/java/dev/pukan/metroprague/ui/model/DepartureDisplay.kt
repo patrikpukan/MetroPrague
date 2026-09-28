@@ -7,6 +7,7 @@ import java.time.ZoneId
 
 sealed interface DepartureDisplay {
     data object NoService : DepartureDisplay
+    data object Unavailable : DepartureDisplay
     data object Cancelled : DepartureDisplay
     data object AtStation : DepartureDisplay
     data object Now : DepartureDisplay
