@@ -1,3 +1,4 @@
+import java.util.Base64
 import java.util.Properties
 
 plugins {
@@ -35,11 +36,11 @@ android {
 
     buildTypes {
         debug {
-            val escapedKey = golemioApiKey.replace("\\", "\\\\").replace("\"", "\\\"")
-            buildConfigField("String", "GOLEMIO_API_KEY", "\"$escapedKey\"")
+            val encodedKey = Base64.getEncoder().encodeToString(golemioApiKey.toByteArray(Charsets.UTF_8))
+            resValue("string", "golemio_api_key_base64", encodedKey)
         }
         release {
-            buildConfigField("String", "GOLEMIO_API_KEY", "\"\"")
+            resValue("string", "golemio_api_key_base64", "")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -52,7 +53,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
-        buildConfig = true
+        resValues = true
         // compose = true
     }
     packaging {
