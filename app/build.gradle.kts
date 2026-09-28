@@ -1,3 +1,6 @@
+import java.util.Base64
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android) apply false
@@ -6,6 +9,13 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
+
+val golemioApiKey = Properties().apply {
+    val localProperties = rootProject.file("local.properties")
+    if (localProperties.isFile) {
+        localProperties.inputStream().use(::load)
+    }
+}.getProperty("GOLEMIO_API_KEY", "")
 
 android {
     namespace = "dev.pukan.metroprague"
@@ -25,7 +35,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            val encodedKey = Base64.getEncoder().encodeToString(golemioApiKey.toByteArray(Charsets.UTF_8))
+            resValue("string", "golemio_api_key_base64", encodedKey)
+        }
         release {
+            resValue("string", "golemio_api_key_base64", "")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -38,6 +53,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
+        resValues = true
         // compose = true
     }
     packaging {

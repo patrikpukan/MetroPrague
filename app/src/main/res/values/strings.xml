@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">MetroPrague</string>
+    <string name="golemio_api_key_base64"></string>
 
     <!-- Departures -->
     <string name="departure_no_service">No service</string>
+    <string name="departure_unavailable">Live departures unavailable</string>
     <string name="departure_cancelled">Cancelled</string>
     <string name="departure_at_station">At station</string>
     <string name="departure_now">Now</string>

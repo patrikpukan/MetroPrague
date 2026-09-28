@@ -135,10 +135,13 @@ change should avoid introducing deprecated APIs or new lint warnings.
 
 ## Data and Privacy
 
-The timetable and real-time data provider has not yet been selected. API keys
-and other secrets must not be committed to the repository; local values belong
-in `local.properties` or Gradle properties and should be exposed to the app
-through build configuration or dependency injection.
+Golemio is the planned timetable and real-time data provider. Debug builds use
+live departures when `GOLEMIO_API_KEY` is set in the gitignored `local.properties`;
+otherwise they use mock data. Release builds still use mocks. API findings and implementation
+status are tracked in [the Golemio integration report](docs/ai/reports/golemio-api-integration.md).
+Never commit API keys or other secrets. A local development key may be stored in
+the gitignored `local.properties`. For release, direct API access and a server
+proxy are both under consideration; a compiled app key is recoverable from an APK.
 
 ## Status
 
