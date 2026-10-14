@@ -14,9 +14,11 @@ import dev.pukan.metroprague.domain.repository.MetroReloadError
 import java.time.Clock
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 
 internal class GolemioMetroDataRepository @Inject constructor(
     private val store: MetroSnapshotStore,
@@ -37,8 +39,8 @@ internal class GolemioMetroDataRepository @Inject constructor(
         )
     }
 
-    override suspend fun reload() {
-        if (!config.useLiveDepartures || !reloadMutex.tryLock()) return
+    override suspend fun reload() = withContext(Dispatchers.IO) {
+        if (!config.useLiveDepartures || !reloadMutex.tryLock()) return@withContext
         progress.value = MetroDataStatus(canReload = true, isReloading = true)
         try {
             val catalogue = loader.load()

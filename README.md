@@ -136,8 +136,13 @@ change should avoid introducing deprecated APIs or new lint warnings.
 ## Data and Privacy
 
 Golemio is the planned timetable and real-time data provider. Debug builds use
-live departures when `GOLEMIO_API_KEY` is set in the gitignored `local.properties`;
-otherwise they use mock data. Release builds still use mocks. API findings and implementation
+the direct Golemio integration when `GOLEMIO_API_KEY` is set in the gitignored
+`local.properties`; otherwise they use mock data. Release builds still use mocks.
+In development, open **Settings → Metro data → Reload data** to download the full
+A/B/C catalogue and current departure snapshots. Home and Search read the saved
+dataset from the device and make no API requests. Reloading is manual; departure
+snapshots older than five minutes prompt you to reload. A failed or cancelled
+reload preserves the previous dataset and your favorites. API findings and implementation
 status are tracked in [the Golemio integration report](docs/ai/reports/golemio-api-integration.md).
 Never commit API keys or other secrets. A local development key may be stored in
 the gitignored `local.properties`. For release, direct API access and a server

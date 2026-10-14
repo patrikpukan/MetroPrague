@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.util.Base64
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.dataStore
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,8 +30,14 @@ import dev.pukan.metroprague.data.repository.MockStationRepository
 import dev.pukan.metroprague.domain.repository.DepartureRepository
 import dev.pukan.metroprague.domain.repository.StationRepository
 import dev.pukan.metroprague.domain.repository.MetroDataRepository
-import java.io.File
 import javax.inject.Singleton
+
+// The context delegate survives Hilt component recreation and owns one store per process.
+private val Context.metroSnapshotDataStore: DataStore<MetroDataSnapshot> by dataStore(
+    fileName = "metro-data.json",
+    serializer = MetroSnapshotSerializer,
+    corruptionHandler = ReplaceFileCorruptionHandler { MetroDataSnapshot() },
+)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -75,11 +81,7 @@ abstract class RepositoryModule {
         @Provides
         @Singleton
         internal fun provideMetroDataStore(@ApplicationContext context: Context): DataStore<MetroDataSnapshot> =
-            DataStoreFactory.create(
-                serializer = MetroSnapshotSerializer,
-                corruptionHandler = ReplaceFileCorruptionHandler { MetroDataSnapshot() },
-                produceFile = { File(context.noBackupFilesDir, "metro-data.json") },
-            )
+            context.metroSnapshotDataStore
 
         @Provides
         @Singleton

@@ -78,16 +78,18 @@ private fun MetroCatalogue.directionFor(
     headsign: String?,
     lastStopId: String?,
 ): String? {
-    platforms.firstOrNull { it.id == stopId && it.stationId == stationId && it.line == line.name }
-        ?.towardStationId?.let { return it }
     val ordered = stations.filter { line.name in it.lineOrders }.sortedBy { it.lineOrders.getValue(line.name) }
     val current = ordered.firstOrNull { it.id == stationId } ?: return null
     val target = ordered.firstOrNull { it.name == headsign }
+    val currentOrder = current.lineOrders.getValue(line.name)
+    if (target != null && target.id != stationId) {
+        return if (target.lineOrders.getValue(line.name) > currentOrder) ordered.last().id else ordered.first().id
+    }
+    platforms.firstOrNull { it.id == stopId && it.stationId == stationId && it.line == line.name }
+        ?.towardStationId?.let { return it }
     val previousStationId = platforms.firstOrNull { it.id == lastStopId }?.stationId
     val previous = ordered.firstOrNull { it.id == previousStationId }
-    val currentOrder = current.lineOrders.getValue(line.name)
     val increasing = when {
-        target != null && target.id != stationId -> target.lineOrders.getValue(line.name) > currentOrder
         previous != null && previous.id != stationId -> previous.lineOrders.getValue(line.name) < currentOrder
         else -> return null
     }

@@ -79,8 +79,16 @@ internal fun parseMetroCatalogue(
         times.dropLast(1).forEach { time ->
             val id = time.text("stop_id")
             val platform = MetroPlatform(id, MetroNetwork.stationId(name(time)), line.name, toward)
-            require(learnedPlatforms[id]?.let { it == platform } != false) { "Ambiguous metro platform direction" }
-            learnedPlatforms[id] = platform
+            val existing = learnedPlatforms[id]
+            require(existing == null || existing.stationId == platform.stationId && existing.line == platform.line) {
+                "Conflicting metro platform station or line"
+            }
+            // A reversing train can depart the same platform in either direction (e.g. Skalka).
+            learnedPlatforms[id] = when {
+                existing == null -> platform
+                existing.towardStationId != platform.towardStationId -> existing.copy(towardStationId = null)
+                else -> existing
+            }
         }
     }
     require(learnedPlatforms.values.map { it.line }.toSet() == setOf("A", "B", "C"))
