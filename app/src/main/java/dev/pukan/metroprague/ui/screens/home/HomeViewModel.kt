@@ -57,7 +57,9 @@ class HomeViewModel @Inject constructor(
                             lineLetter = favorite.direction.line.name,
                             lineColorHex = favorite.direction.line.colorHex,
                             terminusName = nextDeparture?.headsign ?: favorite.direction.terminusName,
-                            nextDeparture = if (board.isUnavailable) {
+                            nextDeparture = if (board.isStale) {
+                                    DepartureDisplay.Stale
+                                } else if (board.isUnavailable) {
                                 DepartureDisplay.Unavailable
                             } else {
                                 nextDeparture.toDisplay(Instant.now(clock), clock.zone)

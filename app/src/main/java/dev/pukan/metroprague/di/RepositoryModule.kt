@@ -3,6 +3,9 @@ package dev.pukan.metroprague.di
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.util.Base64
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -12,11 +15,22 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.pukan.metroprague.R
 import dev.pukan.metroprague.data.golemio.GolemioBoardService
 import dev.pukan.metroprague.data.golemio.HttpGolemioBoardService
+import dev.pukan.metroprague.data.golemio.GolemioHttpClient
+import dev.pukan.metroprague.data.golemio.GolemioCatalogueService
+import dev.pukan.metroprague.data.golemio.HttpGolemioCatalogueService
+import dev.pukan.metroprague.data.golemio.MetroDataSnapshot
+import dev.pukan.metroprague.data.golemio.MetroSnapshotSerializer
+import dev.pukan.metroprague.data.golemio.MetroSnapshotStore
+import dev.pukan.metroprague.data.golemio.DataStoreMetroSnapshotStore
 import dev.pukan.metroprague.data.repository.GolemioDepartureRepository
+import dev.pukan.metroprague.data.repository.GolemioStationRepository
+import dev.pukan.metroprague.data.repository.GolemioMetroDataRepository
 import dev.pukan.metroprague.data.repository.MockDepartureRepository
 import dev.pukan.metroprague.data.repository.MockStationRepository
 import dev.pukan.metroprague.domain.repository.DepartureRepository
 import dev.pukan.metroprague.domain.repository.StationRepository
+import dev.pukan.metroprague.domain.repository.MetroDataRepository
+import java.io.File
 import javax.inject.Singleton
 
 @Module
@@ -25,7 +39,11 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindStationRepository(impl: MockStationRepository): StationRepository
+    internal abstract fun bindSnapshotStore(impl: DataStoreMetroSnapshotStore): MetroSnapshotStore
+
+    @Binds
+    @Singleton
+    internal abstract fun bindMetroDataRepository(impl: GolemioMetroDataRepository): MetroDataRepository
 
     companion object {
         @Provides
@@ -41,8 +59,35 @@ abstract class RepositoryModule {
 
         @Provides
         @Singleton
-        internal fun provideGolemioBoardService(config: LiveDeparturesConfig): GolemioBoardService =
-            HttpGolemioBoardService(config.apiKey)
+        internal fun provideGolemioClient(config: LiveDeparturesConfig): GolemioHttpClient =
+            GolemioHttpClient(config.apiKey)
+
+        @Provides
+        @Singleton
+        internal fun provideGolemioBoardService(client: GolemioHttpClient): GolemioBoardService =
+            HttpGolemioBoardService(client)
+
+        @Provides
+        @Singleton
+        internal fun provideCatalogueService(client: GolemioHttpClient): GolemioCatalogueService =
+            HttpGolemioCatalogueService(client)
+
+        @Provides
+        @Singleton
+        internal fun provideMetroDataStore(@ApplicationContext context: Context): DataStore<MetroDataSnapshot> =
+            DataStoreFactory.create(
+                serializer = MetroSnapshotSerializer,
+                corruptionHandler = ReplaceFileCorruptionHandler { MetroDataSnapshot() },
+                produceFile = { File(context.noBackupFilesDir, "metro-data.json") },
+            )
+
+        @Provides
+        @Singleton
+        internal fun provideStationRepository(
+            mock: MockStationRepository,
+            saved: GolemioStationRepository,
+            config: LiveDeparturesConfig,
+        ): StationRepository = if (config.useLiveDepartures) saved else mock
 
         @Provides
         @Singleton

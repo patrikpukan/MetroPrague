@@ -6,6 +6,9 @@ import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 internal fun interface GolemioBoardService {
@@ -13,10 +16,28 @@ internal fun interface GolemioBoardService {
 }
 
 internal class HttpGolemioBoardService(
-    private val apiKey: String,
+    private val client: GolemioHttpClient,
 ) : GolemioBoardService {
-    override suspend fun getDepartures(stopIds: List<String>): String = withContext(Dispatchers.IO) {
-        val connection = URL(boardUrl(stopIds)).openConnection() as HttpURLConnection
+    override suspend fun getDepartures(stopIds: List<String>): String = client.get(boardUrl(stopIds))
+}
+
+/** One paced transport shared by metadata and board requests. Never logs credentials. */
+internal class GolemioHttpClient(private val apiKey: String) {
+    private val mutex = Mutex()
+    private var nextRequestAtNanos = 0L
+
+    suspend fun get(url: String): String = mutex.withLock {
+        val waitMillis = (nextRequestAtNanos - System.nanoTime()) / 1_000_000
+        if (waitMillis > 0) delay(waitMillis)
+        try {
+            request(url)
+        } finally {
+            nextRequestAtNanos = maxOf(nextRequestAtNanos, System.nanoTime() + 600_000_000L)
+        }
+    }
+
+    private suspend fun request(url: String): String = withContext(Dispatchers.IO) {
+        val connection = URL(url).openConnection() as HttpURLConnection
         try {
             connection.requestMethod = "GET"
             connection.connectTimeout = 10_000
@@ -24,7 +45,14 @@ internal class HttpGolemioBoardService(
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("X-Access-Token", apiKey)
             val status = connection.responseCode
-            if (status !in 200..299) throw GolemioHttpException(status)
+            if (status !in 200..299) {
+                if (status == 429) {
+                    val retrySeconds = connection.getHeaderField("Retry-After")?.toLongOrNull()
+                        ?.coerceIn(1, 3_600) ?: 8
+                    nextRequestAtNanos = System.nanoTime() + retrySeconds * 1_000_000_000L
+                }
+                throw GolemioHttpException(status)
+            }
             connection.inputStream.bufferedReader(StandardCharsets.UTF_8).use { it.readText() }
         } finally {
             connection.disconnect()

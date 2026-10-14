@@ -1,6 +1,6 @@
 # Golemio API integration research
 
-Last checked: 2026-09-28. This is a working report; update it as access, live responses, and product choices are verified.
+Last checked: 2026-10-14. This is a working report; update it as access, live responses, and product choices are verified.
 
 ## Current status
 
@@ -23,7 +23,7 @@ Last checked: 2026-09-28. This is a working report; update it as access, live re
 
 1. The owner registered at the [Golemio API key portal](https://api.golemio.cz/api-keys/), verified email, and generated a key for the [public transport output API](https://api.golemio.cz/pid/docs/openapi/).
 2. The key is in the existing, gitignored root `local.properties` as `GOLEMIO_API_KEY=...`; keep the `sdk.dir` entry too. Never paste the token into chat, an issue, a test fixture, or a commit.
-3. Run `./gradlew assembleDebug` and install the debug APK. A nonblank local key selects the Golemio departure repository in debug. Without it, debug uses mock departures. Release always uses mocks and its generated `BuildConfig` contains no Golemio key. A debug APK **does** contain the key and must not be distributed.
+3. Run `./gradlew assembleDebug` and install the debug APK. A nonblank local key selects the Golemio departure repository in debug. Without it, debug uses mock departures. Release always uses mocks and its generated `golemio_api_key_base64` string resource is empty. A debug APK **does** contain the key and must not be distributed.
 4. The owner still needs to review the [portal terms](https://api.golemio.cz/api-keys/terms-and-conditions). That page requires JavaScript, so this report does **not** claim a verified redistribution or attribution rule. Confirm applicable terms and attribution before publication.
 
 No paid plan, organization approval, or extra account was found in the public registration instructions. If the portal asks for any additional step, record it here.
@@ -39,7 +39,7 @@ No paid plan, organization approval, or extra account was found in the public re
 
 ## Codebase findings and implementation path
 
-The current [`RepositoryModule`](../../../app/src/main/java/dev/pukan/metroprague/di/RepositoryModule.kt) binds both station and departure repositories to mocks. [`Station`](../../../app/src/main/java/dev/pukan/metroprague/domain/model/Station.kt) uses internal slug IDs and ordered metro line positions. Favorites persist those IDs and direction terminus IDs. A direct switch to GTFS stop IDs would invalidate existing favorites and the current direction logic.
+The current [`RepositoryModule`](../../../app/src/main/java/dev/pukan/metroprague/di/RepositoryModule.kt) binds stations to the mock catalogue and selects live departures in debug when the local key is nonblank. [`Station`](../../../app/src/main/java/dev/pukan/metroprague/domain/model/Station.kt) uses internal slug IDs and ordered metro line positions. Favorites persist those IDs and direction terminus IDs. A direct switch to GTFS stop IDs would invalidate existing favorites and the current direction logic.
 
 The [`GolemioDepartureBoardParser`](../../../app/src/main/java/dev/pukan/metroprague/data/golemio/GolemioDepartureBoardParser.kt) maps the documented v2 board JSON into `DepartureBoard`. It selects metro route type `1` and lines A/B/C. [`MetroStopIds`](../../../app/src/main/java/dev/pukan/metroprague/data/golemio/MetroStopIds.kt) maps the 20 current app station slugs to 42 GTFS platform IDs and a travel direction. The [HTTP service](../../../app/src/main/java/dev/pukan/metroprague/data/golemio/GolemioBoardService.kt) requests only those IDs, avoiding the tram/bus departures that exact-name queries also returned. [`GolemioDepartureRepository`](../../../app/src/main/java/dev/pukan/metroprague/data/repository/GolemioDepartureRepository.kt) refreshes while collected and emits an unavailable board on failure. The UI labels this separately from “No service.”
 
@@ -77,6 +77,15 @@ Cloudflare's limit is **not** extra Golemio capacity: the upstream key still has
 **No additional hosting bill option:** if the owner's previously used Hostinger web hosting is still active and supports PHP, a small PHP endpoint could make the HTTPS request using cURL. Hostinger documents PHP hosting and [cURL connectivity](https://www.hostinger.com/support/which-web-standards-and-connectivity-features-are-supported-at-hostinger/). This reuses an existing subscription but is not a truly free independent service; its plan limits, secret placement, caching, and site reliability need verification before choosing it. Do not replace an existing site or publish a token under `public_html`.
 
 **Recommendation for this project:** keep direct Golemio calls for local integration work. If the owner wants a proxy for public distribution without a new monthly bill, start with a single Cloudflare Worker and a small allowlisted endpoint, then measure Worker and Golemio requests. Reusing an already-paid Hostinger plan is a fallback if its PHP setup is convenient. Neither option has been deployed or tested with the owner's accounts yet.
+
+## Live key verification (2026-10-14)
+
+- The current `GOLEMIO_API_KEY` in gitignored `local.properties` authenticated successfully. Tested the exact query used by `boardUrl`: mapped `ids[]`, `minutesAfter=60`, `limit=30`, `mode=departures`, and `order=real` against production `/v2/pid/departureboards`.
+- All **20 current stations** returned **HTTP 200**, totaling **540 departures**. Every returned departure was metro route type `1` on A, B, or C and used a requested platform ID. Responses covered **41 of the 42 mapped platforms**; Háje returned `U286Z101P` only. Absence of departures for its second platform does not establish an invalid mapping.
+- All 540 departures had predicted timestamps; **383** had available numeric delay values. Trip IDs, headsigns, scheduled timestamps, stop IDs, at-stop flags, and cancellation flags matched the app's expected structure. No information texts were returned, so populated disruption text was not verified live.
+- A temporary JVM smoke test fed the captured responses through the actual `GolemioDepartureBoardParser`: all 540 departures parsed and had a nonnull mapped direction. Current short-turn headsigns included **Skalka** on A and **Kačerov** on C.
+- `./gradlew assembleDebug testDebugUnitTest` passed with the existing cached JDK 21. The generated debug `golemio_api_key_base64` resource was decoded locally and confirmed to match the current key without printing either value. The temporary test was removed after verification; no token or live response body was added to the repository.
+- This verifies API access, returned data, parser compatibility, and debug build configuration from the development machine. Android device networking/UI, offline recovery, full station catalogue coverage, and request coordination remain pending.
 
 ## Validation log and next checks
 

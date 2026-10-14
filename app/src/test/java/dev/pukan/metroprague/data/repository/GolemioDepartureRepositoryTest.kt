@@ -1,63 +1,49 @@
 package dev.pukan.metroprague.data.repository
 
-import dev.pukan.metroprague.data.golemio.GolemioBoardService
 import dev.pukan.metroprague.data.golemio.GolemioDepartureBoardParser
-import dev.pukan.metroprague.data.golemio.GolemioHttpException
-import dev.pukan.metroprague.domain.model.Line
+import dev.pukan.metroprague.data.golemio.MemoryMetroStore
+import dev.pukan.metroprague.data.golemio.MetroDataSnapshot
+import dev.pukan.metroprague.data.golemio.MetroTestData
+import dev.pukan.metroprague.data.golemio.SavedDepartureBoard
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 
 class GolemioDepartureRepositoryTest {
+    private val now = Instant.parse("2026-10-14T12:00:00Z")
+    private val store = MemoryMetroStore(MetroDataSnapshot(
+        catalogue = MetroTestData.catalogue,
+        boards = mapOf("andel" to SavedDepartureBoard(MetroTestData.board, now.toEpochMilli())),
+    ))
+
     @Test
-    fun `loads a metro board using mapped platform IDs`() = runTest {
-        var requestedIds: List<String>? = null
-        val service = GolemioBoardService { stopIds ->
-            requestedIds = stopIds
-            """{
-                "departures": [{
-                    "route": {"type": 1, "short_name": "B"},
-                    "trip": {"id": "trip-1", "headsign": "Zličín", "is_at_stop": false, "is_canceled": false},
-                    "stop": {"id": "U1040Z101P"},
-                    "departure_timestamp": {"scheduled": "2026-09-28T12:00:00+02:00", "predicted": null},
-                    "delay": {"is_available": false, "seconds": null}
-                }],
-                "infotexts": []
-            }""".trimIndent()
-        }
-
-        val board = repository(service).getDepartureBoard("andel").first()
-
-        assertEquals(listOf("U1040Z101P", "U1040Z102P"), requestedIds)
-        assertEquals(Line.B, board.departures.single().line)
+    fun `reads saved data and direction without fetching or writing`() = runTest {
+        val board = repository(now).getDepartureBoard("andel").first()
         assertEquals("zlicin", board.departures.single().directionTerminusStationId)
+        assertEquals(listOf("Service information"), board.infoTexts)
+        assertFalse(board.isStale)
         assertFalse(board.isUnavailable)
+        assertEquals(0, store.writes)
     }
 
     @Test
-    fun `API failure is unavailable rather than no service`() = runTest {
-        val board = repository(GolemioBoardService { throw GolemioHttpException(429) })
-            .getDepartureBoard("andel")
-            .first()
-
-        assertTrue(board.isUnavailable)
+    fun `expired snapshots are stale and past trains are removed`() = runTest {
+        val board = repository(now.plusSeconds(300)).getDepartureBoard("andel").first()
+        assertTrue(board.isStale)
         assertTrue(board.departures.isEmpty())
+        assertEquals(now, board.fetchedAt)
     }
 
     @Test
-    fun `unknown station does not call API`() = runTest {
-        val board = repository(GolemioBoardService { error("API should not be called") })
-            .getDepartureBoard("unknown")
-            .first()
-
-        assertTrue(board.isUnavailable)
+    fun `unknown station is unavailable`() = runTest {
+        assertTrue(repository(now).getDepartureBoard("unknown").first().isUnavailable)
     }
 
-    private fun repository(service: GolemioBoardService) = GolemioDepartureRepository(
-        service = service,
-        parser = GolemioDepartureBoardParser(),
+    private fun repository(time: Instant) = GolemioDepartureRepository(
+        store, GolemioDepartureBoardParser(), Clock.fixed(time, ZoneOffset.UTC),
     )
 }
