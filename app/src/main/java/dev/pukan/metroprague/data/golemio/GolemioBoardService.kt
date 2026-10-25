@@ -28,11 +28,13 @@ internal class GolemioHttpClient(private val apiKey: String) {
 
     suspend fun get(url: String): String = mutex.withLock {
         val waitMillis = (nextRequestAtNanos - System.nanoTime()) / 1_000_000
+        // Still inside a Retry-After window: report it now instead of silently stalling a reload.
+        if (waitMillis > PACING_MILLIS) throw GolemioHttpException(429)
         if (waitMillis > 0) delay(waitMillis)
         try {
             request(url)
         } finally {
-            nextRequestAtNanos = maxOf(nextRequestAtNanos, System.nanoTime() + 600_000_000L)
+            nextRequestAtNanos = maxOf(nextRequestAtNanos, System.nanoTime() + PACING_MILLIS * 1_000_000L)
         }
     }
 
@@ -57,6 +59,10 @@ internal class GolemioHttpClient(private val apiKey: String) {
         } finally {
             connection.disconnect()
         }
+    }
+
+    private companion object {
+        const val PACING_MILLIS = 600L
     }
 }
 

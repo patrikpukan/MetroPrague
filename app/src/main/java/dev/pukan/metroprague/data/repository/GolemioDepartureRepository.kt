@@ -10,6 +10,7 @@ import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
@@ -30,17 +31,26 @@ internal class GolemioDepartureRepository @Inject constructor(
     ) { snapshot, now ->
         val saved = snapshot.boards[stationId]
         val catalogue = snapshot.catalogue
-        if (saved == null || catalogue == null) {
-            DepartureBoard(stationId, emptyList(), isUnavailable = true)
-        } else {
-            val fetchedAt = Instant.ofEpochMilli(saved.fetchedAtMillis)
-            val stale = Duration.between(fetchedAt, now).seconds !in 0..299
-            val board = parser.parse(stationId, saved.response, catalogue)
-            board.copy(
-                departures = board.departures.filter { !it.effectiveTime.isBefore(now) },
-                fetchedAt = fetchedAt,
-                isStale = stale,
-            )
+        when {
+            // Nothing saved yet: prompt for a reload rather than reporting an outage.
+            catalogue == null -> DepartureBoard(stationId, emptyList(), isUnavailable = true, isStale = true)
+            saved == null -> unavailable(stationId)
+            else -> try {
+                val fetchedAt = Instant.ofEpochMilli(saved.fetchedAtMillis)
+                val stale = Duration.between(fetchedAt, now).seconds !in 0..299
+                val board = parser.parse(stationId, saved.response, catalogue)
+                board.copy(
+                    departures = board.departures.filter {
+                        !it.effectiveTime.isBefore(now) || it.isAtStop && !stale
+                    },
+                    fetchedAt = fetchedAt,
+                    isStale = stale,
+                )
+            } catch (_: Exception) {
+                unavailable(stationId)
+            }
         }
-    }
+    }.catch { emit(unavailable(stationId)) }
+
+    private fun unavailable(stationId: String) = DepartureBoard(stationId, emptyList(), isUnavailable = true)
 }

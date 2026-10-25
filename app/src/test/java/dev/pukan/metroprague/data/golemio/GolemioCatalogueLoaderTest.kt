@@ -32,6 +32,52 @@ class GolemioCatalogueLoaderTest {
     }
 
     @Test
+    fun `same named surface stops cannot enter metro departure requests or saved metadata`() {
+        val flora = MetroTestData.stops.first {
+            it.getValue("properties").jsonObject.text("stop_name") == "Flora"
+        }
+        val surfaceProperties = JsonObject(flora.getValue("properties").jsonObject +
+            ("stop_id" to JsonPrimitive("U118Z3P")))
+        // Even a surface stop with the same name AND parent must not be accepted by the fallback.
+        val surfaceStop = JsonObject(flora + ("properties" to surfaceProperties))
+        val catalogue = parseMetroCatalogue(
+            MetroTestData.routes,
+            MetroTestData.stops + surfaceStop,
+            MetroTestData.patterns,
+        )
+
+        assertEquals(
+            setOf("U118Z101P", "U118Z102P"),
+            catalogue.platforms.filter { it.stationId == "flora" }.map { it.id }.toSet(),
+        )
+        assertFalse(catalogue.platforms.any { it.id == "U118Z3P" })
+        assertFalse(catalogue.stops.any { it.getValue("properties").jsonObject.text("stop_id") == "U118Z3P" })
+    }
+
+    @Test
+    fun `verified fallback platforms remain available at an unserved interchange`() {
+        val mustekPatterns = MetroTestData.patterns.map { pattern ->
+            val times = pattern.getValue("stop_times").jsonArray.filterNot {
+                it.jsonObject.getValue("stop").jsonObject.getValue("properties").jsonObject.text("stop_name") == "Můstek"
+            }
+            JsonObject(pattern + ("stop_times" to JsonArray(times)))
+        }
+        val metadata = MetroTestData.stops.filterNot {
+            it.getValue("properties").jsonObject.text("stop_name") == "Můstek"
+        } + listOf("U1072Z101P", "U1072Z102P", "U1072Z121P", "U1072Z122P").map { id ->
+            val template = MetroTestData.stops.first {
+                it.getValue("properties").jsonObject.text("stop_name") == "Můstek"
+            }
+            JsonObject(template + ("properties" to JsonObject(template.getValue("properties").jsonObject +
+                ("stop_id" to JsonPrimitive(id)))))
+        }
+        val catalogue = parseMetroCatalogue(MetroTestData.routes, metadata, mustekPatterns)
+
+        assertEquals(4, catalogue.platforms.count { it.stationId == "mustek" })
+        assertEquals(setOf("A", "B"), catalogue.platforms.filter { it.stationId == "mustek" }.map { it.line }.toSet())
+    }
+
+    @Test
     fun `new platform uses short turn destination to select full line direction`() {
         val response = MetroTestData.board.replace("B-9-down", "new-platform").replace("Zličín", "Smíchovské nádraží")
         val board = GolemioDepartureBoardParser().parse("andel", response, MetroTestData.catalogue)

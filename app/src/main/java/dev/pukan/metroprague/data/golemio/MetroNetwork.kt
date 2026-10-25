@@ -26,6 +26,15 @@ internal object MetroNetwork {
         ),
     )
 
+    /** Stations in line order; usable before the first reload so favorites and search still resolve. */
+    val stations: List<SavedStation> by lazy {
+        val lineOrders = linkedMapOf<String, MutableMap<String, Int>>()
+        namesByLine.forEach { (line, names) ->
+            names.forEachIndexed { order, name -> lineOrders.getOrPut(name) { linkedMapOf() }[line.name] = order }
+        }
+        lineOrders.map { (name, lines) -> SavedStation(stationId(name), name, lines) }
+    }
+
     /** Existing central platform IDs bootstrap GTFS patterns, including during non-service hours. */
     val seedPlatforms = listOf(
         "U1072Z101P", "U1072Z102P", "U1072Z121P", "U1072Z122P", "U400Z121P", "U400Z122P",

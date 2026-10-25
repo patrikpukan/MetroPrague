@@ -7,6 +7,7 @@ import dev.pukan.metroprague.data.golemio.GolemioHttpException
 import dev.pukan.metroprague.data.golemio.MetroDataSnapshot
 import dev.pukan.metroprague.data.golemio.MetroSnapshotStore
 import dev.pukan.metroprague.data.golemio.SavedDepartureBoard
+import dev.pukan.metroprague.di.ApplicationScope
 import dev.pukan.metroprague.di.LiveDeparturesConfig
 import dev.pukan.metroprague.domain.repository.MetroDataRepository
 import dev.pukan.metroprague.domain.repository.MetroDataStatus
@@ -14,11 +15,13 @@ import dev.pukan.metroprague.domain.repository.MetroReloadError
 import java.time.Clock
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.withContext
 
 internal class GolemioMetroDataRepository @Inject constructor(
     private val store: MetroSnapshotStore,
@@ -27,6 +30,7 @@ internal class GolemioMetroDataRepository @Inject constructor(
     private val parser: GolemioDepartureBoardParser,
     private val clock: Clock,
     private val config: LiveDeparturesConfig,
+    @param:ApplicationScope private val scope: CoroutineScope,
 ) : MetroDataRepository {
     private val reloadMutex = Mutex()
     private val progress = MutableStateFlow(MetroDataStatus(canReload = config.useLiveDepartures))
@@ -39,23 +43,33 @@ internal class GolemioMetroDataRepository @Inject constructor(
         )
     }
 
-    override suspend fun reload() = withContext(Dispatchers.IO) {
-        if (!config.useLiveDepartures || !reloadMutex.tryLock()) return@withContext
+    override suspend fun reload() {
+        if (!config.useLiveDepartures || !reloadMutex.tryLock()) return
         progress.value = MetroDataStatus(canReload = true, isReloading = true)
+        // Owned by the app scope so leaving Settings does not discard a reload in progress.
+        // Cancelling the caller only stops waiting; the lock is released when the work itself ends.
+        val job = scope.launch(Dispatchers.IO) { download() }
+        job.invokeOnCompletion {
+            progress.update { it.copy(isReloading = false) }
+            reloadMutex.unlock()
+        }
+        job.join()
+    }
+
+    private suspend fun download() {
         try {
             val catalogue = loader.load()
             val savedBoards = linkedMapOf<String, SavedDepartureBoard>()
             var departureCount = 0
-            progress.value = progress.value.copy(totalStations = catalogue.stations.size)
+            progress.update { it.copy(totalStations = catalogue.stations.size) }
             catalogue.stations.forEachIndexed { index, station ->
                 val ids = catalogue.platforms.filter { it.stationId == station.id }.map { it.id }
                 require(ids.isNotEmpty())
                 val response = boards.getDepartures(ids)
-                val parsed = parser.parse(station.id, response, catalogue)
-                require(parsed.departures.all { it.directionTerminusStationId != null }) { "Unmapped departure direction" }
-                departureCount += parsed.departures.size
+                // Departures without a mapped direction still match favorites by headsign.
+                departureCount += parser.parse(station.id, response, catalogue).departures.size
                 savedBoards[station.id] = SavedDepartureBoard(response, clock.millis())
-                progress.value = progress.value.copy(completedStations = index + 1)
+                progress.update { it.copy(completedStations = index + 1) }
             }
             // One atomic write: a failed/cancelled reload never replaces part of the previous data.
             store.replace(MetroDataSnapshot(catalogue, savedBoards, clock.millis(), departureCount))
@@ -67,10 +81,7 @@ internal class GolemioMetroDataRepository @Inject constructor(
                 429 -> MetroReloadError.RateLimited
                 else -> MetroReloadError.NetworkOrData
             }
-            progress.value = progress.value.copy(error = error)
-        } finally {
-            progress.value = progress.value.copy(isReloading = false)
-            reloadMutex.unlock()
+            progress.update { it.copy(error = error) }
         }
     }
 }

@@ -7,8 +7,13 @@ import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Test
@@ -51,17 +56,35 @@ class GolemioMetroDataRepositoryTest {
     fun `simultaneous reload is ignored and cancellation keeps saved data`() = runTest {
         val entered = CompletableDeferred<Unit>()
         val wait = CompletableDeferred<String>()
+        val appScope = CoroutineScope(Job())
         var calls = 0
-        val repository = repository(GolemioBoardService { calls++; entered.complete(Unit); wait.await() })
+        val repository = repository(GolemioBoardService { calls++; entered.complete(Unit); wait.await() }, scope = appScope)
         val job = launch { repository.reload() }
         entered.await()
         repository.reload()
         assertEquals(1, calls)
-        job.cancel()
+        appScope.cancel()
         job.join()
         assertEquals(previous, store.data.value)
         assertFalse(repository.status.first().isReloading)
         assertEquals(0, store.writes)
+    }
+
+    @Test
+    fun `cancelling the caller does not cancel the reload`() = runTest {
+        val entered = CompletableDeferred<Unit>()
+        val wait = CompletableDeferred<Unit>()
+        val repository = repository(GolemioBoardService {
+            entered.complete(Unit)
+            wait.await()
+            """{"departures":[]}"""
+        })
+        val caller = launch { repository.reload() }
+        entered.await()
+        caller.cancelAndJoin()
+        wait.complete(Unit)
+        assertEquals(58, store.data.first { it.boards.isNotEmpty() }.boards.size)
+        assertEquals(1, store.writes)
     }
 
     @Test
@@ -72,8 +95,12 @@ class GolemioMetroDataRepositoryTest {
         assertEquals(0, store.writes)
     }
 
-    private fun repository(service: GolemioBoardService, enabled: Boolean = true) = GolemioMetroDataRepository(
+    private fun TestScope.repository(
+        service: GolemioBoardService,
+        enabled: Boolean = true,
+        scope: CoroutineScope = backgroundScope,
+    ) = GolemioMetroDataRepository(
         store, GolemioCatalogueLoader(MetroTestData.service), service, GolemioDepartureBoardParser(), clock,
-        LiveDeparturesConfig(if (enabled) "test-key" else "", isDebuggable = true),
+        LiveDeparturesConfig(if (enabled) "test-key" else "", isDebuggable = true), scope,
     )
 }

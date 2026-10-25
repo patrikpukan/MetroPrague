@@ -27,7 +27,14 @@ internal object MetroTestData {
     }
     val stops = MetroNetwork.namesByLine.flatMap { (line, names) ->
         names.flatMapIndexed { index, name ->
-            listOf("up", "down").map { direction -> stop("${line.name}-$index-$direction", name) }
+            listOf("up", "down").map { direction ->
+                val id = if (name == "Flora") {
+                    if (direction == "up") "U118Z101P" else "U118Z102P"
+                } else {
+                    "${line.name}-$index-$direction"
+                }
+                stop(id, name)
+            }
         }
     }
     private fun stop(id: String, name: String) = buildJsonObject {

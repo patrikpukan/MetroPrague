@@ -54,14 +54,10 @@ internal fun parseMetroCatalogue(
             props["parent_station"]?.jsonPrimitive?.content?.let { parent -> parent != "null" && parent.isNotBlank() } == true
     }
     val byName = metroStops.groupBy { it.getValue("properties").jsonObject.text("stop_name") }
-    val stationLines = linkedMapOf<String, MutableMap<String, Int>>()
-    MetroNetwork.namesByLine.forEach { (line, names) ->
-        names.forEachIndexed { order, name ->
-            require(!byName[name].isNullOrEmpty()) { "Missing metro station metadata: $name" }
-            stationLines.getOrPut(name) { linkedMapOf() }[line.name] = order
-        }
-    }
-    val stations = stationLines.map { (name, lines) -> SavedStation(MetroNetwork.stationId(name), name, lines) }
+    val stations = MetroNetwork.stations
+    stations.forEach { require(!byName[it.name].isNullOrEmpty()) { "Missing metro station metadata: ${it.name}" } }
+    val stationsByName = stations.associateBy { it.name }
+    val routePlatforms = linkedMapOf<String, MetroPlatform>()
     val learnedPlatforms = linkedMapOf<String, MetroPlatform>()
     patterns.forEach { pattern ->
         val line = routeLines.getValue(pattern.text("route_id"))
@@ -75,6 +71,14 @@ internal fun parseMetroCatalogue(
         val end = names.indexOf(name(times.last()))
         require(start != end)
         val toward = MetroNetwork.stationId(if (start < end) names.last() else names.first())
+        // Arrival platforms are also proven metro stops, even without an observed departure.
+        times.forEach { time ->
+            val platform = MetroPlatform(time.text("stop_id"), MetroNetwork.stationId(name(time)), line.name)
+            require(routePlatforms[platform.id]?.let { it == platform } != false) {
+                "Conflicting metro platform station or line"
+            }
+            routePlatforms[platform.id] = platform
+        }
         // The final stop is an arrival platform; it does not establish a departure direction.
         times.dropLast(1).forEach { time ->
             val id = time.text("stop_id")
@@ -96,13 +100,14 @@ internal fun parseMetroCatalogue(
         val props = stop.getValue("properties").jsonObject
         val name = props.text("stop_name")
         val id = props.text("stop_id")
-        learnedPlatforms[id] ?: stationLines[name]?.keys?.singleOrNull()?.let { line ->
-            // Unserved/alternate terminal platforms still belong to a single-line station.
-            MetroPlatform(id, MetroNetwork.stationId(name), line)
-        }
+        val stationId = MetroNetwork.stationId(name)
+        val platform = learnedPlatforms[id] ?: routePlatforms[id] ?: MetroPlatformFallbacks.find(stationId, id)
+        platform?.takeIf { it.stationId == stationId && it.line in stationsByName[name]?.lineOrders.orEmpty() }
     }.distinctBy { it.id }
     require(stations.all { station -> station.lineOrders.keys.all { line -> platforms.any { it.stationId == station.id && it.line == line } } })
-    return MetroCatalogue(stations, platforms, routes, metroStops, patterns)
+    val metroIds = platforms.map { it.id }.toSet()
+    val verifiedStops = metroStops.filter { it.getValue("properties").jsonObject.text("stop_id") in metroIds }
+    return MetroCatalogue(stations, platforms, routes, verifiedStops, patterns)
 }
 
 internal fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content

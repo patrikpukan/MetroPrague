@@ -22,11 +22,7 @@ internal data class MetroCatalogue(
     val stops: List<JsonObject>,
     val tripPatterns: List<JsonObject>,
 ) {
-    fun domainStations(): List<Station> = stations.map { station ->
-        Station(station.id, station.name, station.lineOrders.map { (line, order) ->
-            LinePosition(Line.valueOf(line), order)
-        })
-    }
+    fun domainStations(): List<Station> = stations.map(SavedStation::toDomain)
 }
 
 @Serializable
@@ -34,7 +30,9 @@ internal data class SavedStation(
     val id: String,
     val name: String,
     val lineOrders: Map<String, Int>,
-)
+) {
+    fun toDomain() = Station(id, name, lineOrders.map { (line, order) -> LinePosition(Line.valueOf(line), order) })
+}
 
 @Serializable
 internal data class MetroPlatform(
