@@ -15,10 +15,10 @@ import kotlinx.serialization.json.jsonPrimitive
 
 /** Maps the public PID v2 departure-board response to the app's current metro model. */
 internal class GolemioDepartureBoardParser @Inject constructor() {
-    fun parse(stationId: String, response: String): DepartureBoard {
+    fun parse(stationId: String, response: String, catalogue: MetroCatalogue? = null): DepartureBoard {
         val root = Json.parseToJsonElement(response).jsonObject
         val departures = root.getValue("departures").jsonArray.mapNotNull { item ->
-            parseDeparture(stationId, item.jsonObject)
+            parseDeparture(stationId, item.jsonObject, catalogue)
         }.sortedBy { it.effectiveTime }
         val infoTexts = root["infotexts"]?.jsonArray?.mapNotNull { item ->
             item.jsonObject.stringOrNull("text")?.takeIf(String::isNotBlank)
@@ -27,7 +27,7 @@ internal class GolemioDepartureBoardParser @Inject constructor() {
         return DepartureBoard(stationId, departures, infoTexts)
     }
 
-    private fun parseDeparture(stationId: String, item: JsonObject): Departure? {
+    private fun parseDeparture(stationId: String, item: JsonObject, catalogue: MetroCatalogue?): Departure? {
         val route = item.getValue("route").jsonObject
         if (route.getValue("type").jsonPrimitive.intOrNull != METRO_ROUTE_TYPE) return null
         val line = when (route.stringOrNull("short_name")) {
@@ -54,8 +54,11 @@ internal class GolemioDepartureBoardParser @Inject constructor() {
             },
             isAtStop = trip.getValue("is_at_stop").jsonPrimitive.content == "true",
             isCanceled = trip.getValue("is_canceled").jsonPrimitive.content == "true",
-            directionTerminusStationId = stopId?.let {
-                MetroStopIds.towardStationId(stationId, line, it)
+            directionTerminusStationId = if (catalogue == null) {
+                stopId?.let { MetroStopIds.towardStationId(stationId, line, it) }
+            } else {
+                catalogue.directionFor(stationId, line, stopId, trip.stringOrNull("headsign"),
+                    item["last_stop"]?.jsonObject?.stringOrNull("id"))
             },
         )
     }
@@ -66,4 +69,29 @@ internal class GolemioDepartureBoardParser @Inject constructor() {
     private companion object {
         const val METRO_ROUTE_TYPE = 1
     }
+}
+
+private fun MetroCatalogue.directionFor(
+    stationId: String,
+    line: Line,
+    stopId: String?,
+    headsign: String?,
+    lastStopId: String?,
+): String? {
+    val ordered = stations.filter { line.name in it.lineOrders }.sortedBy { it.lineOrders.getValue(line.name) }
+    val current = ordered.firstOrNull { it.id == stationId } ?: return null
+    val target = ordered.firstOrNull { it.name == headsign }
+    val currentOrder = current.lineOrders.getValue(line.name)
+    if (target != null && target.id != stationId) {
+        return if (target.lineOrders.getValue(line.name) > currentOrder) ordered.last().id else ordered.first().id
+    }
+    platforms.firstOrNull { it.id == stopId && it.stationId == stationId && it.line == line.name }
+        ?.towardStationId?.let { return it }
+    val previousStationId = platforms.firstOrNull { it.id == lastStopId }?.stationId
+    val previous = ordered.firstOrNull { it.id == previousStationId }
+    val increasing = when {
+        previous != null && previous.id != stationId -> previous.lineOrders.getValue(line.name) < currentOrder
+        else -> return null
+    }
+    return if (increasing) ordered.last().id else ordered.first().id
 }

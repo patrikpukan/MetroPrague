@@ -26,6 +26,8 @@ data class DepartureBoard(
     val departures: List<Departure>,
     val infoTexts: List<String> = emptyList(),
     val isUnavailable: Boolean = false,
+    val isStale: Boolean = false,
+    val fetchedAt: Instant? = null,
 )
 
 fun DepartureBoard.forDirection(direction: Direction): List<Departure> {

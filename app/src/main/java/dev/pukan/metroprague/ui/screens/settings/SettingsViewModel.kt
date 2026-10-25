@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.pukan.metroprague.data.preferences.UserPreferencesRepository
 import dev.pukan.metroprague.domain.model.ThemePreference
+import dev.pukan.metroprague.domain.repository.MetroDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: UserPreferencesRepository,
+    private val metroDataRepository: MetroDataRepository,
 ) : ViewModel() {
 
     private data class TransientState(
@@ -27,11 +29,12 @@ class SettingsViewModel @Inject constructor(
     private val transient = MutableStateFlow(TransientState())
 
     val uiState: StateFlow<SettingsUiState> =
-        combine(repository.themePreference, transient) { theme, tr ->
+        combine(repository.themePreference, transient, metroDataRepository.status) { theme, tr, data ->
             SettingsUiState(
                 theme = theme,
                 language = tr.language,
                 activeDialog = tr.activeDialog,
+                metroData = data,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -62,5 +65,9 @@ class SettingsViewModel @Inject constructor(
 
     fun dismissDialog() {
         transient.update { it.copy(activeDialog = SettingsDialog.None) }
+    }
+
+    fun reloadData() {
+        viewModelScope.launch { metroDataRepository.reload() }
     }
 }

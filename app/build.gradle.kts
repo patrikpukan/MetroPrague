@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.datastore.preferences)
+    implementation(libs.datastore.core)
     ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)

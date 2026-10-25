@@ -51,7 +51,8 @@ Additional UX goals include:
 - Gradle Kotlin DSL and a centralized version catalog
 
 The project currently compiles against Android API 36, targets API 36, and has
-a minimum supported SDK of API 36. Java 17 is required.
+a minimum supported SDK of API 36. App code targets Java 17; building it
+requires JDK 21, which the Gradle daemon is pinned to.
 
 ## Architecture
 
@@ -90,7 +91,7 @@ The Android application namespace and application ID are
 
 - A recent Android Studio release
 - Android SDK 36
-- JDK 17
+- JDK 21 (runs Gradle; the app itself targets Java 17)
 - An API 36 emulator or physical device for instrumentation tests
 
 Clone the repository and open its root directory in Android Studio. Allow
@@ -136,8 +137,15 @@ change should avoid introducing deprecated APIs or new lint warnings.
 ## Data and Privacy
 
 Golemio is the planned timetable and real-time data provider. Debug builds use
-live departures when `GOLEMIO_API_KEY` is set in the gitignored `local.properties`;
-otherwise they use mock data. Release builds still use mocks. API findings and implementation
+the direct Golemio integration when `GOLEMIO_API_KEY` is set in the gitignored
+`local.properties`; otherwise they use mock data. Release builds still use mocks.
+In development, open **Settings → Metro data → Reload data** to download the full
+A/B/C catalogue and current departure snapshots. Home and Search read the saved
+dataset from the device and make no API requests. Before the first reload, they
+list stations from the built-in network topology and prompt you to reload for
+departures. Reloading is manual and continues if you leave Settings; departure
+snapshots older than five minutes prompt you to reload. A failed or cancelled
+reload preserves the previous dataset and your favorites. API findings and implementation
 status are tracked in [the Golemio integration report](docs/ai/reports/golemio-api-integration.md).
 Never commit API keys or other secrets. A local development key may be stored in
 the gitignored `local.properties`. For release, direct API access and a server

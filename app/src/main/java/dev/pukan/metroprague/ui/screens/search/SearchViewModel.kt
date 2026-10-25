@@ -94,7 +94,9 @@ class SearchViewModel @Inject constructor(
                                 direction = direction,
                                 lineLetter = direction.line.name,
                                 lineColorHex = direction.line.colorHex,
-                                nextDeparture = if (board.isUnavailable) {
+                                nextDeparture = if (board.isStale) {
+                                    DepartureDisplay.Stale
+                                } else if (board.isUnavailable) {
                                     DepartureDisplay.Unavailable
                                 } else {
                                     nextDeparture.toDisplay(Instant.now(clock), clock.zone)

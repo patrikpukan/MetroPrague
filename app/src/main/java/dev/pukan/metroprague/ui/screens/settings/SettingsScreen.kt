@@ -37,6 +37,7 @@ fun SettingsScreen(
     onOpenChangelog: () -> Unit,
     onDismissDialog: () -> Unit,
     modifier: Modifier = Modifier,
+    onReloadData: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -88,6 +89,11 @@ fun SettingsScreen(
                     ),
                 ),
             ),
+        )
+        MetroDataSettings(
+            status = state.metroData,
+            onReload = onReloadData,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
         )
     }
 
@@ -178,6 +184,7 @@ fun SettingsScreenRoute(
         onSelectLanguage = viewModel::selectLanguage,
         onOpenChangelog = viewModel::openChangelog,
         onDismissDialog = viewModel::dismissDialog,
+        onReloadData = viewModel::reloadData,
     )
 }
 

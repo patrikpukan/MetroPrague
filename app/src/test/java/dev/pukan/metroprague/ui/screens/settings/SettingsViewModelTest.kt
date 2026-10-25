@@ -2,6 +2,9 @@ package dev.pukan.metroprague.ui.screens.settings
 
 import dev.pukan.metroprague.data.preferences.UserPreferencesRepository
 import dev.pukan.metroprague.domain.model.ThemePreference
+import dev.pukan.metroprague.domain.repository.MetroDataRepository
+import dev.pukan.metroprague.domain.repository.MetroDataStatus
+import dev.pukan.metroprague.domain.repository.MetroReloadError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +47,14 @@ class SettingsViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = SettingsViewModel(repository)
+    private val metroStatus = MutableStateFlow(MetroDataStatus(canReload = true))
+    private var reloadCount = 0
+    private val metroRepository = object : MetroDataRepository {
+        override val status = metroStatus
+        override suspend fun reload() { reloadCount++ }
+    }
+
+    private fun viewModel() = SettingsViewModel(repository, metroRepository)
 
     private fun subscribeAndCollect(vm: SettingsViewModel, scope: kotlinx.coroutines.CoroutineScope) {
         scope.launch(UnconfinedTestDispatcher(testDispatcher.scheduler)) {
@@ -185,4 +195,16 @@ class SettingsViewModelTest {
         assertEquals("1.0", state.versionName)
         assertEquals(1, state.versionCode)
     }
+    @Test
+    fun `reload action reaches data repository and exposes progress and failure`() = runTest {
+        val vm = viewModel()
+        subscribeAndCollect(vm, backgroundScope)
+        vm.reloadData()
+        assertEquals(1, reloadCount)
+        metroStatus.value = MetroDataStatus(canReload = true, isReloading = true, completedStations = 7, totalStations = 58)
+        assertEquals(7, vm.uiState.value.metroData.completedStations)
+        metroStatus.value = metroStatus.value.copy(isReloading = false, error = MetroReloadError.NetworkOrData)
+        assertEquals(MetroReloadError.NetworkOrData, vm.uiState.value.metroData.error)
+    }
+
 }
