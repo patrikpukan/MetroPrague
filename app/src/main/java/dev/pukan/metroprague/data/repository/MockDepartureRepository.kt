@@ -141,7 +141,7 @@ private fun isNoServiceTime(secondsSinceMidnight: Int): Boolean =
     secondsSinceMidnight in NO_SERVICE_START_SECONDS until SERVICE_START_SECONDS
 
 private const val REFRESH_INTERVAL_MILLIS = 15_000L
-private const val DEPARTURES_PER_DIRECTION = 3
+private const val DEPARTURES_PER_DIRECTION = 5
 private const val DELAY_TRIP_INTERVAL = 5
 private const val DELAY_SECONDS = 60
 private const val AT_STOP_THRESHOLD_SECONDS = 30L

@@ -25,6 +25,7 @@ fun DirectionPickerSheet(
     sheetState: DirectionSheetUiState?,
     onSheetDismissed: () -> Unit,
     onToggleFavorite: (Direction) -> Unit,
+    onDirectionSelected: (Direction) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     if (sheetState == null) return
@@ -57,6 +58,7 @@ fun DirectionPickerSheet(
                         departure = rowState.nextDeparture,
                         isFavorite = rowState.isFavorite,
                         onToggleFavorite = { onToggleFavorite(rowState.direction) },
+                        onClick = { onDirectionSelected(rowState.direction) },
                         modifier = Modifier.testTag(
                             "DirectionRow_${rowState.direction.line}_${rowState.direction.terminusStationId}",
                         ),

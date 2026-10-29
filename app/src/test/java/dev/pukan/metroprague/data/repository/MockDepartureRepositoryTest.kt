@@ -19,12 +19,12 @@ class MockDepartureRepositoryTest {
     private val stationRepository = MockStationRepository()
 
     @Test
-    fun `peak board has three sorted future departures for both directions`() = runTest {
+    fun `peak board has five sorted future departures for both directions`() = runTest {
         val now = Instant.parse("2026-01-15T07:00:00Z")
         val board = repositoryAt(now).getDepartureBoard("andel").first()
 
         assertEquals(setOf("Zličín", "Černý Most"), board.departures.map { it.headsign }.toSet())
-        assertEquals(listOf(3, 3), board.departures.groupingBy { it.headsign }.eachCount().values.sorted())
+        assertEquals(listOf(5, 5), board.departures.groupingBy { it.headsign }.eachCount().values.sorted())
         assertTrue(board.departures.all { it.effectiveTime > now })
         assertEquals(
             board.departures.map { it.effectiveTime }.sorted(),
@@ -38,7 +38,7 @@ class MockDepartureRepositoryTest {
             .getDepartureBoard("andel")
             .first()
 
-        assertEquals(listOf(120L, 120L), gapsFor(board.departures, "Zličín"))
+        assertEquals(listOf(120L, 120L, 120L, 120L), gapsFor(board.departures, "Zličín"))
     }
 
     @Test
@@ -47,7 +47,7 @@ class MockDepartureRepositoryTest {
             .getDepartureBoard("andel")
             .first()
 
-        assertEquals(listOf(300L, 300L), gapsFor(board.departures, "Zličín"))
+        assertEquals(listOf(300L, 300L, 300L, 300L), gapsFor(board.departures, "Zličín"))
     }
 
     @Test
@@ -111,7 +111,7 @@ class MockDepartureRepositoryTest {
 
         val matchingDepartures = board.forDirection(direction)
 
-        assertEquals(3, matchingDepartures.size)
+        assertEquals(5, matchingDepartures.size)
         assertTrue(matchingDepartures.all { it.line == Line.A })
         assertTrue(matchingDepartures.all { it.headsign == "Depo Hostivař" })
     }

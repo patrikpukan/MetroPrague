@@ -19,6 +19,7 @@
     <string name="direction_picker_close">Close</string>
     <string name="favorite_add">Add to favorites</string>
     <string name="favorite_remove">Remove from favorites</string>
+    <string name="navigate_back">Back</string>
 
     <!-- Home -->
     <string name="home_title">Favorites</string>

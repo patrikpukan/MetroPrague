@@ -11,6 +11,8 @@ import dev.pukan.metroprague.ui.navigation.BottomNavigationBar
 import dev.pukan.metroprague.ui.navigation.HomeRoute
 import dev.pukan.metroprague.ui.navigation.SearchRoute
 import dev.pukan.metroprague.ui.navigation.SettingsRoute
+import dev.pukan.metroprague.ui.navigation.StationDeparturesRoute
+import dev.pukan.metroprague.ui.screens.departures.StationDeparturesScreenRoute
 import dev.pukan.metroprague.ui.screens.home.HomeScreenRoute
 import dev.pukan.metroprague.ui.screens.search.SearchScreenRoute
 import dev.pukan.metroprague.ui.screens.settings.SettingsScreenRoute
@@ -36,7 +38,24 @@ fun MainScreen() {
                     },
                 )
             }
-            composable<SearchRoute> { SearchScreenRoute() }
+            composable<SearchRoute> {
+                SearchScreenRoute(
+                    onNavigateToStationDepartures = { stationId, direction ->
+                        navController.navigate(
+                            StationDeparturesRoute(
+                                stationId = stationId,
+                                line = direction.line,
+                                terminusStationId = direction.terminusStationId,
+                            ),
+                        )
+                    },
+                )
+            }
+            composable<StationDeparturesRoute> {
+                StationDeparturesScreenRoute(
+                    onNavigateBack = { navController.navigateUp() },
+                )
+            }
             composable<SettingsRoute> { SettingsScreenRoute() }
         }
     }

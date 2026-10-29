@@ -67,4 +67,21 @@ class MainScreenTest {
         composeRule.onNodeWithText("Appearance").assertExists()
         composeRule.onNodeWithTag("HomeScreen").assertDoesNotExist()
     }
+
+    @Test
+    fun searchStationAndSelectDirection_opensStationDeparturesScreen() {
+        composeRule.setContent {
+            MetroPragueTheme {
+                MainScreen()
+            }
+        }
+
+        composeRule.onNodeWithText("Search").performClick()
+        composeRule.onNodeWithTag("StationItem_muzeum").performClick()
+        composeRule.onNodeWithTag("DirectionRow_A_depo-hostivar").performClick()
+
+        composeRule.onNodeWithTag("StationDeparturesScreen").assertExists()
+        composeRule.onNodeWithTag("NavigateBackButton").performClick()
+        composeRule.onNodeWithTag("SearchScreen").assertExists()
+    }
 }

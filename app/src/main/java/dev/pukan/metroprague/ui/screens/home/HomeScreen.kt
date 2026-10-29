@@ -44,6 +44,7 @@ import dev.pukan.metroprague.R
 import dev.pukan.metroprague.domain.model.FavoriteKey
 import dev.pukan.metroprague.domain.model.Line
 import dev.pukan.metroprague.ui.model.DepartureDisplay
+import dev.pukan.metroprague.ui.model.label
 import dev.pukan.metroprague.ui.theme.MetroPragueTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,18 +185,6 @@ fun FavoriteCard(
             }
         }
     }
-}
-
-@Composable
-private fun DepartureDisplay.label(): String = when (this) {
-    DepartureDisplay.NoService -> stringResource(R.string.departure_no_service)
-    DepartureDisplay.Unavailable -> stringResource(R.string.departure_unavailable)
-    DepartureDisplay.Stale -> stringResource(R.string.departure_stale)
-    DepartureDisplay.Cancelled -> stringResource(R.string.departure_cancelled)
-    DepartureDisplay.AtStation -> stringResource(R.string.departure_at_station)
-    DepartureDisplay.Now -> stringResource(R.string.departure_now)
-    is DepartureDisplay.InMinutes -> stringResource(R.string.departure_in_minutes, minutes)
-    is DepartureDisplay.AtTime -> stringResource(R.string.departure_at_time, hour, minute)
 }
 
 private fun FavoriteCardUiState.favoriteTagKey(): String =

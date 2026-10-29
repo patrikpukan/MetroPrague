@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 data class DirectionSheetUiState(
     val stationName: String,
     val directions: List<DirectionRowUiState>,
+    val stationId: String = "",
 )
 
 data class DirectionRowUiState(
@@ -88,6 +89,7 @@ class SearchViewModel @Inject constructor(
                         ?: return@combine null
                     DirectionSheetUiState(
                         stationName = station.name,
+                        stationId = station.id,
                         directions = stations.directionsAt(station).map { direction ->
                             val nextDeparture = board.forDirection(direction).firstOrNull()
                             DirectionRowUiState(

@@ -1,6 +1,7 @@
 package dev.pukan.metroprague.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.pukan.metroprague.R
 import dev.pukan.metroprague.ui.model.DepartureDisplay
+import dev.pukan.metroprague.ui.model.label
 
 @Composable
 fun DirectionRow(
@@ -37,10 +39,12 @@ fun DirectionRow(
     isFavorite: Boolean,
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -79,16 +83,4 @@ fun DirectionRow(
             )
         }
     }
-}
-
-@Composable
-private fun DepartureDisplay.label(): String = when (this) {
-    DepartureDisplay.NoService -> stringResource(R.string.departure_no_service)
-    DepartureDisplay.Unavailable -> stringResource(R.string.departure_unavailable)
-    DepartureDisplay.Stale -> stringResource(R.string.departure_stale)
-    DepartureDisplay.Cancelled -> stringResource(R.string.departure_cancelled)
-    DepartureDisplay.AtStation -> stringResource(R.string.departure_at_station)
-    DepartureDisplay.Now -> stringResource(R.string.departure_now)
-    is DepartureDisplay.InMinutes -> stringResource(R.string.departure_in_minutes, minutes)
-    is DepartureDisplay.AtTime -> stringResource(R.string.departure_at_time, hour, minute)
 }

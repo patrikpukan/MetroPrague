@@ -49,6 +49,7 @@ fun SearchScreen(
     onStationSelected: (Station) -> Unit,
     onSheetDismissed: () -> Unit,
     onToggleFavorite: (Direction) -> Unit,
+    onDirectionSelected: (Direction) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -103,6 +104,7 @@ fun SearchScreen(
         sheetState = sheetState,
         onSheetDismissed = onSheetDismissed,
         onToggleFavorite = onToggleFavorite,
+        onDirectionSelected = onDirectionSelected,
     )
 }
 
@@ -157,6 +159,7 @@ fun StationItem(
 
 @Composable
 fun SearchScreenRoute(
+    onNavigateToStationDepartures: (stationId: String, direction: Direction) -> Unit = { _, _ -> },
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -174,5 +177,11 @@ fun SearchScreenRoute(
         onStationSelected = viewModel::onStationSelected,
         onSheetDismissed = viewModel::onSheetDismissed,
         onToggleFavorite = viewModel::onToggleFavorite,
+        onDirectionSelected = { direction ->
+            val currentStationId = sheetState?.stationId?.takeIf { it.isNotEmpty() }
+                ?: return@SearchScreen
+            viewModel.onSheetDismissed()
+            onNavigateToStationDepartures(currentStationId, direction)
+        },
     )
 }
