@@ -1,6 +1,7 @@
 package dev.pukan.metroprague.ui.screens.settings
 
 import dev.pukan.metroprague.domain.model.ThemePreference
+import dev.pukan.metroprague.domain.repository.MetroDataStatus
 
 enum class AppLanguage { System, English, Czech }
 
@@ -19,6 +20,7 @@ data class ChangelogEntry(
 data class SettingsUiState(
     val theme: ThemePreference = ThemePreference.System,
     val language: AppLanguage = AppLanguage.System,
+    val metroData: MetroDataStatus = MetroDataStatus(),
     val activeDialog: SettingsDialog = SettingsDialog.None,
     val versionName: String = "1.0",
     val versionCode: Int = 1,

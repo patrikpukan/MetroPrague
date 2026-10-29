@@ -5,6 +5,7 @@
     <!-- Departures -->
     <string name="departure_no_service">No service</string>
     <string name="departure_unavailable">Live departures unavailable</string>
+    <string name="departure_stale">Reload departures in Settings</string>
     <string name="departure_cancelled">Cancelled</string>
     <string name="departure_at_station">At station</string>
     <string name="departure_now">Now</string>
@@ -27,6 +28,18 @@
 
     <!-- Settings screen -->
     <string name="settings_title">Settings</string>
+    <string name="settings_metro_data">Metro data</string>
+    <string name="settings_data_description">Stations and departures are saved on this device. Data updates only when you reload it. Departure snapshots expire after 5 minutes.</string>
+    <string name="settings_data_not_loaded">No metro data saved yet. Reload to load stations and departures.</string>
+    <string name="settings_data_counts">%1$d stations · %2$d saved departures</string>
+    <string name="settings_data_last_reload">Last reload: %1$s</string>
+    <string name="settings_data_loading_catalogue">Loading routes, stations and platforms…</string>
+    <string name="settings_data_loading_boards">Loading departures: %1$d of %2$d stations…</string>
+    <string name="settings_data_reload">Reload data</string>
+    <string name="settings_data_reload_unavailable">Data reload is unavailable in this build.</string>
+    <string name="settings_data_auth_error">Golemio rejected the API key. Previous saved data was kept.</string>
+    <string name="settings_data_rate_error">Golemio’s request limit was reached. Wait before trying again. Previous saved data was kept.</string>
+    <string name="settings_data_reload_error">Could not reload metro data. Check your connection and try again. Previous saved data was kept.</string>
 
     <!-- Settings section headers -->
     <string name="settings_section_appearance">Appearance</string>

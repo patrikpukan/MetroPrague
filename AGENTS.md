@@ -21,6 +21,19 @@
     - `./gradlew clean` — remove build outputs if you hit cache issues.
 - Use the latest Android Studio/SDK tools; the project targets API level 36.
 
+## Kotlin Language Server
+
+Use the installed JetBrains [kotlin-lsp](https://github.com/Kotlin/kotlin-lsp)
+(`jetbrains.kotlin-server`) for Kotlin work:
+
+- Resolve definitions, references, implementations, hover types, and document or workspace
+  symbols through the language server.
+- Read its diagnostics and apply quick fixes after edits.
+- Use it to format Kotlin and organize imports.
+
+Wait for kotlin-lsp to finish importing the Gradle project before trusting its results.
+`./gradlew assembleDebug` and `./gradlew test` remain the compile and test gates.
+
 ## Coding Style & Naming Conventions
 
 - Language: Kotlin with planned Jetpack Compose UI with Material 3 Expressive; prefer idiomatic
