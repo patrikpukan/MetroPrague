@@ -34,6 +34,11 @@ Use the installed JetBrains [kotlin-lsp](https://github.com/Kotlin/kotlin-lsp)
 Wait for kotlin-lsp to finish importing the Gradle project before trusting its results.
 `./gradlew assembleDebug` and `./gradlew test` remain the compile and test gates.
 
+## Android CLI
+
+Use the `android` CLI (see the `android-cli` skill) to manage emulators and to run, inspect, and
+interact with the app on a device.
+
 ## Coding Style & Naming Conventions
 
 - Language: Kotlin with planned Jetpack Compose UI with Material 3 Expressive; prefer idiomatic
