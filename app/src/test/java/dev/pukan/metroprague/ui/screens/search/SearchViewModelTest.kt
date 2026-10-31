@@ -94,6 +94,7 @@ class SearchViewModelTest {
 
         val sheetState = checkNotNull(viewModel.sheetState.value)
         assertEquals("Muzeum", sheetState.stationName)
+        assertEquals("muzeum", sheetState.stationId)
         assertEquals(4, sheetState.directions.size)
         assertEquals(
             setOf("Nemocnice Motol", "Depo Hostivař", "Letňany", "Háje"),

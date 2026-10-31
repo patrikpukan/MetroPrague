@@ -79,6 +79,38 @@ class SearchScreenTest {
         assertEquals(station, selectedStation)
     }
 
+    @Test
+    fun directionRowClick_invokesDirectionSelected() = runComposeUiTest {
+        val expectedDirection = Direction(Line.A, "nemocnice-motol", "Nemocnice Motol")
+        var selectedDirection: Direction? = null
+        setContent {
+            MetroPragueTheme {
+                SearchScreen(
+                    searchQuery = "",
+                    selectedLine = null,
+                    stations = listOf(station),
+                    sheetState = DirectionSheetUiState(
+                        stationName = "Muzeum",
+                        directions = listOf(
+                            directionRow(Line.A, "nemocnice-motol", "Nemocnice Motol"),
+                        ),
+                        stationId = "muzeum",
+                    ),
+                    onSearchQueryChange = {},
+                    onLineFilterChange = {},
+                    onStationSelected = {},
+                    onSheetDismissed = {},
+                    onToggleFavorite = {},
+                    onDirectionSelected = { selectedDirection = it },
+                )
+            }
+        }
+
+        onNodeWithTag("DirectionRow_A_nemocnice-motol").performClick()
+
+        assertEquals(expectedDirection, selectedDirection)
+    }
+
     private fun directionRow(
         line: Line,
         terminusStationId: String,
