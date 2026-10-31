@@ -182,15 +182,17 @@ private fun StationDepartureRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(R.string.direction_toward, item.destinationName),
+                modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyLarge,
             )
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = item.departure.label(),
+                modifier = Modifier.testTag("DepartureTime_${item.tripId}"),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
