@@ -17,7 +17,7 @@
     - `./gradlew assembleDebug` — compile the debug APK.
     - `./gradlew test` — run JVM unit tests.
     - `./gradlew connectedAndroidTest` — run instrumentation tests on an attached/emulated device (
-      API 36 to match `minSdk`/`targetSdk`).
+      API 37.2).
     - `./gradlew clean` — remove build outputs if you hit cache issues.
 - Use the latest Android Studio/SDK tools; the project targets API level 36.
 
@@ -39,10 +39,7 @@ Wait for kotlin-lsp to finish importing the Gradle project before trusting its r
 Use the `android` CLI (see the `android-cli` skill) to manage emulators and to run, inspect, and
 interact with the app on a device.
 
-Always use the existing `Pixel_10_Pro` virtual device (Pixel 10 Pro, Android 17, API 37.2) as the
-emulator. Do not create, or download system images for, any other virtual device, including for the
-API 36 checks mentioned in this file; if API 36 validation needs a device that is not already
-available, say so and ask instead.
+Emulators must run API 37.2. Use an existing virtual device instead of creating a new one.
 
 ## Coding Style & Naming Conventions
 
@@ -92,8 +89,8 @@ available, say so and ask instead.
 
 - Do not commit secrets or API keys; keep them in `local.properties` or Gradle properties and
   reference via buildConfig or DI.
-- Check compatibility with API level 36 devices/emulators before merging; align new libraries with
-  the version catalog to avoid drift.
+- Check compatibility with API 37.2 devices/emulators before merging; align new libraries with the
+  version catalog to avoid drift.
 - Keep AGP/Kotlin/JDK/API targets as currently configured unless explicitly requested to change
   them.
 - Do not add new repositories; keep dependency resolution through existing `google()` and
