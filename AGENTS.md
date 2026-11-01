@@ -39,6 +39,11 @@ Wait for kotlin-lsp to finish importing the Gradle project before trusting its r
 Use the `android` CLI (see the `android-cli` skill) to manage emulators and to run, inspect, and
 interact with the app on a device.
 
+Always use the existing `Pixel_10_Pro` virtual device (Pixel 10 Pro, Android 17, API 37.2) as the
+emulator. Do not create, or download system images for, any other virtual device, including for the
+API 36 checks mentioned in this file; if API 36 validation needs a device that is not already
+available, say so and ask instead.
+
 ## Coding Style & Naming Conventions
 
 - Language: Kotlin with planned Jetpack Compose UI with Material 3 Expressive; prefer idiomatic
