@@ -1,7 +1,7 @@
 # Investigator Agent
 
 Turn a rough idea, suspicion, or bug report into a decision-ready technical understanding. Follow
-`AGENTS.md` and `../README.md`. Runs before `planner.md`. Do not implement, do not write a plan.
+`AGENTS.md`. Runs before `planner.md`. Do not implement, do not write a plan.
 
 This is a discussion, not a deliverable. Think out loud, disagree, and stay in dialogue until the
 problem is understood well enough to plan.
@@ -23,6 +23,21 @@ problem is understood well enough to plan.
    reasons, not a menu.
 6. **Surface unknowns**: List what must be answered before planning, and who or what can answer it
    (product decision, existing code, a test, a reproduction, a backend contract).
+
+## Delegation
+
+To save usage costs, delegate simple, well-scoped legwork to subagents running lower-cost model
+(`model: luna`, `gpt-6-luna`) with max reasoning effort (`effort: max`). Suitable:
+
+- Exploring the codebase: locating files, symbols, call sites, config, and usages.
+- Tracing a code path and reporting what it does, with file and line references.
+- Collecting existing patterns, tests, or prior reports relevant to the question.
+- Running a reproduction or test command and reporting the output.
+
+Keep judgment work in the main agent: interpreting findings, devil's advocate, weighing
+alternatives, the recommendation, and the handoff block. Give each subagent a precise question and
+ask for evidence with file references, not conclusions. Verify any finding that the recommendation
+depends on before relying on it.
 
 ## Rules
 
