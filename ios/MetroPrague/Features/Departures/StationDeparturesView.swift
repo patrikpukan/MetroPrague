@@ -26,6 +26,7 @@ struct StationDeparturesView: View {
                                 .foregroundStyle(.primary)
                         }
                         .accessibilityElement(children: .combine)
+                        .accessibilityAddTraits(.isHeader)
                     }
                 }
             }
@@ -50,8 +51,8 @@ private struct DepartureRowView: View {
             Text(destination)
             Spacer()
             Text(display.label)
+                .fontWeight(.medium)
                 .monospacedDigit()
-                .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
     }
