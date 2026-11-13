@@ -1,9 +1,11 @@
-# Repository Guidelines
+# Android App Guidelines
+
+This file covers the Android app in this directory. Repository-wide rules are in `../AGENTS.md`.
 
 ## Project Structure & Module Organization
 
-- Single Android app module in `app/` using Gradle Kotlin DSL (`build.gradle.kts`,
-  `settings.gradle.kts`, `gradle/libs.versions.toml` for version catalog).
+- The Android app uses Gradle Kotlin DSL (`build.gradle.kts`, `settings.gradle.kts`, and
+  `gradle/libs.versions.toml` for the version catalog).
 - Source sets live under `app/src/main` with `AndroidManifest.xml` and `res/` for UI assets; Kotlin
   sources will live in `app/src/main/java/dev/pukan/metroprague`.
 - Tests: JVM unit tests in `app/src/test/java/dev/pukan/metroprague`, instrumentation tests in
@@ -13,7 +15,7 @@
 
 ## Build, Test, and Development Commands
 
-- Sync/build in Android Studio, or from CLI:
+- Sync/build in Android Studio, or run CLI commands from `android/`:
     - `./gradlew assembleDebug` — compile the debug APK.
     - `./gradlew test` — run JVM unit tests.
     - `./gradlew connectedAndroidTest` — run instrumentation tests on an attached/emulated device (
@@ -24,7 +26,7 @@
 ## Kotlin Language Server
 
 Use the installed JetBrains [kotlin-lsp](https://github.com/Kotlin/kotlin-lsp)
-(`jetbrains.kotlin-server`) for Kotlin work:
+(`jetbrains.kotlin-server`) for Kotlin work, with `android/` as its workspace root:
 
 - Resolve definitions, references, implementations, hover types, and document or workspace
   symbols through the language server.
@@ -32,7 +34,8 @@ Use the installed JetBrains [kotlin-lsp](https://github.com/Kotlin/kotlin-lsp)
 - Use it to format Kotlin and organize imports.
 
 Wait for kotlin-lsp to finish importing the Gradle project before trusting its results.
-`./gradlew assembleDebug` and `./gradlew test` remain the compile and test gates.
+Run `./gradlew assembleDebug` and `./gradlew test` from `android/`; they remain the compile and
+test gates.
 
 ## Android CLI
 
@@ -104,21 +107,9 @@ Emulators must run API 37.2. Use an existing virtual device instead of creating 
 
 ## Quality Gates
 
-- Ensure `./gradlew assembleDebug` succeeds for code changes.
+- From `android/`, ensure `./gradlew assembleDebug` succeeds for code changes.
 - Keep lint warnings minimal and avoid introducing deprecated APIs.
 
 ## Jetpack Compose Expert
 
-For all Jetpack Compose tasks, follow the workflow and checklists in
-`.agents/skills/compose-expert/skills/compose-expert/SKILL.md`.
-
-Before answering any Compose question, consult the relevant reference:
-
-- State management ->
-  `.agents/skills/compose-expert/skills/compose-expert/references/state-management.md`
-- Performance -> `.agents/skills/compose-expert/skills/compose-expert/references/performance.md`
-- Navigation -> `.agents/skills/compose-expert/skills/compose-expert/references/navigation.md`
-- (see SKILL.md for the full topic -> file mapping)
-
-For implementation details, check actual source code in
-`.agents/skills/compose-expert/skills/compose-expert/references/source-code/`.
+For Compose work, use the `compose-expert` skill.

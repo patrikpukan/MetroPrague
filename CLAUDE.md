@@ -1,6 +1,5 @@
 # Repository Instructions
 
-Always read and follow `./AGENTS.md`.
+Always read and follow `AGENTS.md`.
 
-Use `./.agents/` and `/docs/ai/` for all repository-specific skills, workflows, references, and
-supporting instructions.
+Use `docs/ai/` for repository-specific plans, reports, and supporting instructions.

@@ -14,8 +14,8 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
 | 2. Move the Android project into `android/` | done | `chore: move Android project into android/` |
 | 3. Root `.gitignore` | done | `chore: add root .gitignore` |
 | 4. Android CI with change detection | done (PR run pending) | `ci: change-detected Android workflow` |
-| 5. Layered agent context | todo | |
-| 6. README split | todo | |
+| 5. Layered agent context | done | `docs: layer agent context into root and android/` |
+| 6. README split | done | `docs: split README into product and Android setup` |
 | 7. Shared product docs and Golemio report move | todo | |
 | 8. Shared fixtures | todo | |
 | 9. Final verification | todo | |
@@ -85,3 +85,27 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
   - `53bda72..HEAD` (Android renames) → `android=true`
   - all-zero base, empty base, unreachable base → `android=true`
 - `actionlint` is not installed; Ruby YAML parse passes. The GitHub PR run is checked in Phase 2.
+
+## Task 5: Layered Agent Context
+
+- Builder (shared run with Task 6): `git mv AGENTS.md android/AGENTS.md` and edited it (paths
+  relative to `android/`, commands run from `android/`, kotlin-lsp root `android/`, Compose section
+  → `compose-expert` skill, repo framing removed); new root `AGENTS.md` with the seven sections;
+  root `CLAUDE.md` without `.agents/`; new `android/CLAUDE.md`; `docs/ai/README.md` with the
+  historical-paths note; role doc fixes in `implementation-orchestrator.md` (Gradle from
+  `android/`, `compose-expert` skill) and `planner.md` (`../../README.md`).
+- Orchestrator fixes: moved the routing sentence in `android/AGENTS.md` below the H1; rewrapped
+  an over-long line in `implementation-orchestrator.md`.
+- Orchestrator verification: `grep -rn '\.agents/' AGENTS.md CLAUDE.md android/AGENTS.md
+  docs/ai/agents` returns nothing; `cd android && ./gradlew assembleDebug` and `./gradlew test`
+  pass from the root as written; root `AGENTS.md` has no build rules, `android/AGENTS.md` has no
+  repository-wide policy.
+
+## Task 6: README Split
+
+- New `android/README.md` (Technology, Architecture, Project Structure rooted at `android/`,
+  Getting Started, Command-Line Tasks from `android/`, Testing and Quality, Android data/dev
+  setup). Root `README.md` keeps the product sections and adds Platforms, the layout tree, the
+  `parity.md` link, and a data and privacy summary.
+- Links to `docs/product/parity.md` and `docs/api/golemio.md` resolve after Task 7. The Android
+  README still links the Golemio report at its old path; Task 7 updates it.
