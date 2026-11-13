@@ -1,0 +1,5 @@
+.DS_Store
+/.idea/
+/.claude/worktrees/
+
+# Platform-specific ignore rules live in android/.gitignore and, later, ios/.gitignore.
