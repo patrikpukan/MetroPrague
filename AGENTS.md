@@ -3,7 +3,7 @@
 ## Repository Map
 
 - `android/` contains the Kotlin, Jetpack Compose, and Gradle Android app.
-- `ios/` will contain the SwiftUI and Xcode iOS app; it is planned.
+- `ios/` contains the SwiftUI and Xcode iOS app.
 - `docs/product/` contains shared feature behavior, platform status, and product decisions.
 - `docs/api/` contains shared API research.
 - `docs/ai/` contains agent roles, plans, reports, and workflow guidance.

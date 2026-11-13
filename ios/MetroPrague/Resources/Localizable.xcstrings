@@ -1,0 +1,30 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Coming soon." : {
+
+    },
+    "Favorites" : {
+
+    },
+    "Home" : {
+
+    },
+    "No favorites yet" : {
+
+    },
+    "Search" : {
+
+    },
+    "Search for a station and pick a direction to add it here." : {
+
+    },
+    "Settings" : {
+
+    },
+    "Station search" : {
+
+    }
+  },
+  "version" : "1.0"
+}

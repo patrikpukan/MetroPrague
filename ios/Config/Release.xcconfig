@@ -1,0 +1,2 @@
+// Release builds never contain the Golemio key.
+#include "Shared.xcconfig"

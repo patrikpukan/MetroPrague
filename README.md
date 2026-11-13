@@ -9,14 +9,14 @@ API documentation.
 | Platform | Technology | Project | Status |
 | --- | --- | --- | --- |
 | Android | Kotlin, Jetpack Compose, Material 3 Expressive | `android/` | Active development |
-| iOS | Swift, SwiftUI | `ios/` | Planned |
+| iOS | Swift, SwiftUI | `ios/` | Scaffolded |
 
 ## Monorepo Layout
 
 ```text
 MetroPrague/
 ├── android/       # Android app, Gradle project, setup instructions
-├── ios/           # iOS app (planned)
+├── ios/           # iOS app (SwiftUI, Xcode project)
 ├── docs/
 │   ├── product/   # shared feature behavior, parity, decisions
 │   ├── api/       # shared API research

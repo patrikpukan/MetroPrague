@@ -2,6 +2,8 @@
 
 Status describes each platform independently: `not started`, `in progress`, `done`, `behind spec`, or `n/a`. A platform may ship on its own schedule.
 
+iOS project scaffold (Xcode project, tab shell, CI) landed on 2026-11-13; no iOS feature is implemented yet.
+
 Last reviewed: 2026-11-13
 
 | Feature | Android | iOS | Last reviewed |
