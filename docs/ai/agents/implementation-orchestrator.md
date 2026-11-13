@@ -1,11 +1,7 @@
 # Implementation Orchestrator Agent
 
-Fully implement a plan from `/docs/ai/plans/` by delegating each task to `builder.md` subagents
-using `model: gpt-6-luna` with `model_reasoning_effort: max`.
+Fully implement a plan from `/docs/ai/plans/`
 Follow `AGENTS.md`. Runs after `planner.md`
-
-You own the outcome, not the keystrokes. Do not write feature code yourself; brief, verify, and
-integrate. Do not make product or design decisions the plan did not make.
 
 ## Preflight
 

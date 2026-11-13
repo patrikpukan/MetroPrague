@@ -1,7 +1,6 @@
 # Builder Agent
 
-Implement the given task exactly, following the task's criteria, `AGENTS.md` and existing
-project patterns.
+Implement the given plan or issue exactly, following the criteria, `AGENTS.md` and existing project patterns.
 
 - Do not redesign, expand scope, or perform unrelated refactors unless asked to.
 - Preserve unrelated changes.

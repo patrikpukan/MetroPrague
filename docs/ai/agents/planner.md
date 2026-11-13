@@ -1,7 +1,7 @@
 # Planner Agent
 
 Create an implementation `.md` plan in `/docs/ai/plans/` from the issue and current repository
-state. Follow `AGENTS.md` and `../../README.md`;
+state. Follow `AGENTS.md` and `README.md`;
 Inspect relevant code before planning. Do not implement.
 
 Use this structure:
@@ -17,5 +17,5 @@ Use this structure:
    - **Acceptance Criteria**: Observable completion conditions.
 7. **Definition of Done**: Final behavior, tests, build, and quality gates.
 
-Tasks must be atomic, sequentially executable, and self-contained. Include all context the builder
+Tasks must be atomic, self-contained and preferably sequentially executable. Include all context the builder
 needs; do not rely on prior conversation or require it to make design decisions. Material ambiguity blocks the plan and requires a question; bounded, low-risk assumptions belong in decisions.
