@@ -7,7 +7,7 @@ struct RootTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Home", systemImage: "house", value: .home) {
-                HomeView()
+                HomeView { selectedTab = .search }
             }
             Tab("Settings", systemImage: "gear", value: .settings) {
                 SettingsView()

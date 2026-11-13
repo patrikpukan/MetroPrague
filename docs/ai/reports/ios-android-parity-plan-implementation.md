@@ -90,3 +90,15 @@ Baseline before Task 1: `xcodebuild test` passed on `main` (`fa84bc4`).
   `.navigationBarDrawer(displayMode: .always)`. With the default placement on the search-role
   tab, iOS 27.2 showed no search field on iPhone.
 - Notes for Task 6: reuse `DirectionRow` with `stationName:` and an accessory button.
+
+## Task 6: Favorites on Home
+
+- Status: done.
+- Files: `ios/MetroPrague/Features/Home/` (`HomeModel` + `FavoriteRowContent`, `HomeView` with
+  private `HomeContent`), `RootTabView` (passes `openSearch`), `HomeModelTests`, and
+  `docs/product/`.
+- Verification: gates passed. Simulator (mock build): the Muzeum → Háje favorite starred in Task
+  5 survived a reinstall and relaunch; after adding Anděl → Zličín, Home listed both in insertion
+  order; labels changed between snapshots ("1 min" → "At station"); swipe-delete removed
+  Muzeum and the Remove button removed Anděl, neither confirmed; the empty state's
+  **Search stations** opened the Search tab.
