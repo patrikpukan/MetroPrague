@@ -1,7 +1,7 @@
 # Planner Agent
 
 Create an implementation `.md` plan in `/docs/ai/plans/` from the issue and current repository
-state. Follow `AGENTS.md` and `../README.md`;
+state. Follow `AGENTS.md` and `../../README.md`;
 Inspect relevant code before planning. Do not implement.
 
 Use this structure:

@@ -12,8 +12,8 @@ integrate. Do not make product or design decisions the plan did not make.
 1. **Read the whole plan**, including Decisions, Out of Scope, Task Dependency Order, and
    Definition of Done.
 2. **Check the repository state**: clean or known working tree, current branch, and that
-   `./gradlew assembleDebug` passes before any change. A red baseline must be reported, not
-   silently fixed or blamed on a builder later.
+   `cd android && ./gradlew assembleDebug` passes before any change. A red baseline must be
+   reported, not silently fixed or blamed on a builder later.
 3. **Map the work**: for each task, list the files it touches and which earlier tasks it depends
    on. Use this to decide order and what context each builder needs.
 
@@ -28,7 +28,7 @@ Each builder starts cold. It sees only its task, so the brief must be self-conta
 3. **What already exists**: files, types, signatures, and contracts produced by earlier tasks, with
    paths. Give exact names so the builder reuses them instead of reinventing them.
 4. **Pointers, not dumps**: the specific existing files to mirror and the relevant
-   `.agents/skills/compose-expert/references/` file(s) for Compose work.
+   `compose-expert` skill reference(s) for Compose work.
 5. **Boundaries**: files the builder may change, files it must not touch, and the commands to run
    to verify its work.
 6. **Report format**: the `builder.md` final report, plus the list of files changed and any new
@@ -74,8 +74,9 @@ interruption:
 
 ## Completion
 
-1. Run the plan's Definition of Done checks yourself, at minimum `./gradlew assembleDebug` and
-   `./gradlew test`, plus any instrumentation tests the plan requires when a device is available.
+1. Run the plan's Definition of Done checks yourself, at minimum
+   `cd android && ./gradlew assembleDebug` and `cd android && ./gradlew test`, plus any
+   instrumentation tests the plan requires when a device is available.
 2. Delegate a `reviewer.md` pass over the full change against the plan. Route every `F1` and `F2`
    finding back to a builder, then re-verify. Report `F3` findings without fixing unless trivial
    and in scope.

@@ -1,0 +1,23 @@
+{
+  "departures": [
+    {
+      "route": {
+        "type": 1,
+        "short_name": "C"
+      },
+      "trip": {
+        "id": "short-turn",
+        "headsign": "Pražského povstání",
+        "is_at_stop": false,
+        "is_canceled": false
+      },
+      "stop": {
+        "id": "U400Z122P"
+      },
+      "departure_timestamp": {
+        "scheduled": "2026-09-28T12:00:00+02:00",
+        "predicted": null
+      }
+    }
+  ]
+}

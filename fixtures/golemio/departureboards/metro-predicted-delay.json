@@ -1,0 +1,30 @@
+{
+  "departures": [
+    {
+      "route": {
+        "type": 1,
+        "short_name": "A"
+      },
+      "trip": {
+        "id": "trip-1",
+        "headsign": "Depo Hostivař",
+        "is_at_stop": false,
+        "is_canceled": false
+      },
+      "departure_timestamp": {
+        "scheduled": "2026-09-26T10:00:00Z",
+        "predicted": "2026-09-26T10:01:30Z"
+      },
+      "delay": {
+        "is_available": true,
+        "seconds": 90
+      }
+    }
+  ],
+  "infotexts": [
+    {
+      "text": "Výluka",
+      "text_en": "Disruption"
+    }
+  ]
+}
