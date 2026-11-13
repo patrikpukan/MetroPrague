@@ -22,4 +22,7 @@ struct RootTabView: View {
 
 #Preview {
     RootTabView()
+        .environment(MetroDataStore(source: MockMetroDataSource()))
+        .environment(FavoritesStore())
+        .environment(AppSettings())
 }

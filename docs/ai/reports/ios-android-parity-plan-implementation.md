@@ -47,3 +47,17 @@ Baseline before Task 1: `xcodebuild test` passed on `main` (`fa84bc4`).
     bare `MetroSnapshot`, so parsing stays in the `@concurrent` functions.
   - `FavoritesStore` has `favorites`, `contains`, `add`, `remove`, `toggle`. `AppSettings.theme`
     is settable and persists on set.
+
+## Task 3: Settings
+
+- Status: done, except the live-key reload checks; see *Open items*.
+- Files: `ios/MetroPrague/Features/Settings/` (`SettingsView` with a private `MetroDataSection`,
+  `ChangelogView` + `ChangelogEntry`, `AppVersion`, `MetroDataStatus+Text`), the
+  `RootTabView` preview, tests in `ios/MetroPragueTests/Features/Settings/`, and
+  `docs/product/` (`parity.md`, `settings.md`, `metro-data-sync.md`, `decisions.md`).
+- Verification: gates passed. Simulator (iPhone 18 Pro, iOS 27.2, mock build): choosing Dark
+  returned to Settings and switched the app at once; Dark survived a relaunch; Changelog opened
+  with the three 1.0 notes; the App version row is exposed as static text ("App version, 1.0
+  (1)"), not a button; "Data reload is unavailable in this build." shows without a key. The
+  theme was set back to System afterwards.
+- The error message is also announced to VoiceOver when it appears (Android uses a live region).
