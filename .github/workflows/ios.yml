@@ -1,0 +1,77 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      ios: ${{ steps.filter.outputs.ios }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect iOS changes
+        id: filter
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base="$PR_BASE_SHA"
+          else
+            base="$PUSH_BEFORE"
+          fi
+
+          ios=true
+          if [[ "$base" =~ ^[0-9a-fA-F]{7,64}$ && ! "$base" =~ ^0+$ ]]; then
+            if git cat-file -e "${base}^{commit}" 2>/dev/null; then
+              changed="$(git diff --name-only "$base" HEAD)"
+              if grep -Eq '^(ios/|fixtures/|\.github/workflows/ios\.yml$)' <<< "$changed"; then
+                ios=true
+              else
+                ios=false
+              fi
+            fi
+          fi
+
+          echo "ios=$ios" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.ios == 'true'
+    # The project uses Xcode 27's JSON project format (project.xcproj), which Xcode 26 cannot open.
+    # `xcode-27` is GitHub's (preview) image with Xcode 27; its default is 27.1, so select 27.2 to
+    # match local development.
+    runs-on: xcode-27
+    defaults:
+      run:
+        working-directory: ios
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: Lint
+        run: xcrun swift-format lint --strict --recursive MetroPrague MetroPragueTests
+      - name: Choose simulator
+        run: echo "DEST=$(scripts/simulator-destination.sh)" >> "$GITHUB_ENV"
+      - name: Build and test
+        run: >-
+          xcodebuild test
+          -project MetroPrague.xcodeproj
+          -scheme MetroPrague
+          -destination "$DEST"
+          -derivedDataPath build
+          CODE_SIGNING_ALLOWED=NO
+          SWIFT_TREAT_WARNINGS_AS_ERRORS=YES

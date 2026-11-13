@@ -51,6 +51,7 @@ Port behavior, not structure. These are starting points, not rules to translate 
 ## Steps
 
 1. **Scaffold plan.** Have the planner write `docs/ai/plans/ios-scaffold-plan.md`. Scope:
+   (Plan: [ios-scaffold-plan.md](plans/ios-scaffold-plan.md).)
    - an Xcode project in `ios/` (iOS 26+, SwiftUI app, Swift Testing target);
    - the `.xcconfig` for the key;
    - `ios/AGENTS.md`, `ios/CLAUDE.md`, `ios/README.md`, and `ios/.gitignore`;
@@ -65,8 +66,9 @@ Port behavior, not structure. These are starting points, not rules to translate 
    - the instruction to use the Xcode / SwiftUI agent skills (`swiftui-specialist`,
      `swiftui-whats-new-27`);
    - the instruction to drive simulators through the device tools.
-2. **Data layer first.** Port Golemio networking, parsing, catalogue loading, the snapshot store,
-   favorites, and preferences, following `docs/product/features/metro-data-sync.md` and
+2. **Data layer first.** Steps 2–4 are planned in
+   [ios-android-parity-plan.md](plans/ios-android-parity-plan.md). Port Golemio networking,
+   parsing, catalogue loading, the snapshot store, favorites, and preferences, following `docs/product/features/metro-data-sync.md` and
    `docs/api/golemio.md`. Tests read the shared fixtures. Use the Android implementations as
    references for each rule, not as a template.
 3. **Screens, one spec at a time,** in this order:

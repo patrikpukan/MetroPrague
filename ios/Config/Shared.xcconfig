@@ -1,0 +1,3 @@
+// Settings shared by every configuration of the MetroPrague app target.
+// Empty unless Debug.xcconfig includes Secrets.xcconfig.
+GOLEMIO_API_KEY =

@@ -1,0 +1,3 @@
+#include "Shared.xcconfig"
+// Optional: local, gitignored. Copy Secrets.example.xcconfig to create it.
+#include? "Secrets.xcconfig"
