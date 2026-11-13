@@ -16,6 +16,12 @@
     "About" : {
 
     },
+    "Add to favorites" : {
+
+    },
+    "All" : {
+
+    },
     "App version" : {
 
     },
@@ -31,7 +37,10 @@
     "Changelog" : {
 
     },
-    "Coming soon." : {
+    "Choose a direction" : {
+
+    },
+    "Close" : {
 
     },
     "Could not reload metro data. Check your connection and try again. Previous saved data was kept." : {
@@ -103,6 +112,9 @@
     "Reload departures in Settings" : {
 
     },
+    "Remove from favorites" : {
+
+    },
     "Search" : {
 
     },
@@ -112,7 +124,7 @@
     "Settings" : {
 
     },
-    "Station search" : {
+    "Station name" : {
 
     },
     "Stations and departures are saved on this device. Data updates only when you reload it. Departure snapshots expire after 5 minutes." : {

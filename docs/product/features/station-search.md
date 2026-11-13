@@ -16,6 +16,8 @@ Search the metro station catalogue by name, optionally narrow the results to one
 
 Each platform may choose its own search field, line-filter controls, station-list presentation, picker surface, navigation, typography, and motion. Keep the filtering, direction derivation, departure preview states, favorite identity, and accessible add/remove meaning aligned.
 
+iOS uses `.searchable` on the Search tab's `NavigationStack`, always shown under the title, a row of All/A/B/C chips as the list header (tapping the selected line, or All, clears the filter; `.searchScopes` cannot clear on a second tap), and station rows with line badges. The direction picker is a sheet with medium and large detents and a Close button. Choosing a direction dismisses the sheet and pushes departures onto the Search tab's stack. The star button is labeled "Add to favorites" or "Remove from favorites" and carries the selected trait when favorited.
+
 ## Android reference
 
 - ViewModel: `android/app/src/main/java/dev/pukan/metroprague/ui/screens/search/SearchViewModel.kt`
@@ -25,7 +27,10 @@ Each platform may choose its own search field, line-filter controls, station-lis
 
 ## iOS reference
 
-TBD
+- Model: `ios/MetroPrague/Features/Search/SearchModel.swift`
+- UI: `ios/MetroPrague/Features/Search/SearchView.swift`, `DirectionPickerSheet.swift`, `ios/MetroPrague/Shared/DirectionRow.swift`
+- Direction derivation: `ios/MetroPrague/Domain/StationDirections.swift`
+- Tests: `ios/MetroPragueTests/Features/Search/SearchModelTests.swift`, `ios/MetroPragueTests/Domain/StationDirectionsTests.swift`
 
 ## Open questions
 

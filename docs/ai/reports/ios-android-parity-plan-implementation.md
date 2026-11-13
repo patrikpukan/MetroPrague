@@ -72,3 +72,21 @@ Baseline before Task 1: `xcodebuild test` passed on `main` (`fa84bc4`).
 - Verification: gates passed; `RenderPreview` rendered the Departures, Stale, Unavailable, and
   No service previews.
 - Notes for later tasks: push a `DepartureRoute` onto the Search tab's stack to open the screen.
+
+## Task 5: Station Search and Direction Picker
+
+- Status: done.
+- Files: `ios/MetroPrague/Features/Search/` (`SearchModel`, `SearchView` with private
+  `SearchContent`, `StationRow`, `LineFilterBar`; `DirectionPickerSheet`),
+  `ios/MetroPrague/Shared/DirectionRow.swift` (`DirectionRowContent`, generic `DirectionRow`,
+  `FavoriteButton`), `SearchModelTests`, and `docs/product/`.
+- Verification: gates passed. Simulator (mock build): "muz" found only Muzeum; the C chip
+  narrowed the list and tapping C again cleared it; Muzeum's picker showed four directions with
+  labels ("Line A, To Nemocnice Motol, 1 min", …); starring Háje changed its button to "Remove
+  from favorites" [selected] and it stayed starred after reopening; choosing it pushed Muzeum
+  departures (five rows); Back returned to Search. VoiceOver labels came from the accessibility
+  snapshot.
+- Deviation (platform-native, no Must match impact): the search field uses
+  `.navigationBarDrawer(displayMode: .always)`. With the default placement on the search-role
+  tab, iOS 27.2 showed no search field on iPhone.
+- Notes for Task 6: reuse `DirectionRow` with `stationName:` and an accessory button.
