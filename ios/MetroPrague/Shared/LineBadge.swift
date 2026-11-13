@@ -19,11 +19,12 @@ struct LineBadge: View {
 }
 
 extension Line {
-    /// The letter color on the line color. Line B's yellow needs a dark letter: white on it is
-    /// only 2.0:1, while black is 10.5:1. White on A is 3.2:1 and on C 5.0:1, enough for the
-    /// badge's bold large-text letter.
+    /// The letter color on the line color, chosen to reach 4.5:1 at every text size (the letter
+    /// drops below the 14 pt bold large-text size at the smallest Dynamic Type settings).
+    /// Black on A is 6.6:1 (white only 3.2:1), black on B 10.5:1 (white 2.0:1), and white on C
+    /// 5.0:1.
     var letterColor: Color {
-        self == .b ? .black : .white
+        self == .c ? .white : .black
     }
 
     /// The line's brand color.

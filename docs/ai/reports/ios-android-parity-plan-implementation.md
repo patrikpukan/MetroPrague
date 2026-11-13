@@ -108,8 +108,10 @@ Baseline before Task 1: `xcodebuild test` passed on `main` (`fa84bc4`).
 Run once after Task 6 with the three skills from `ios/AGENTS.md`, on Settings, Search, the
 direction picker, departures, and Home. Fixes are in one commit on top of Task 6.
 
-- Sufficient contrast: **FAIL → fixed.** White on line B's yellow was 2.0:1 (the B letter is
-  now black, 10.5:1; A white 3.2:1 and C white 5.0:1 pass for the bold large-text letter).
+- Sufficient contrast: **FAIL → fixed.** White on line B's yellow was 2.0:1 and white on line
+  A's green 3.2:1, which fails below 14 pt bold (the badge letter is 12–13 pt at the smallest
+  Dynamic Type sizes; caught in the PR #20 review). A and B now use black (6.6:1 and 10.5:1); C
+  keeps white (5.0:1).
   Departure time labels and Settings text used `.secondary` (≈3.4:1 on white rows) and now use
   the primary color. The selected line chip was white on blue (4.0:1, semibold) and now inverts
   primary/background. The red error text (≈3.6:1) is now primary text with a red warning symbol.
@@ -122,7 +124,7 @@ direction picker, departures, and Home. Fixes are in one commit on top of Task 6
   station names mid-word. The badge now scales with `@ScaledMetric`, and direction and station
   rows stack the badge and text vertically at accessibility sizes (checked with `RenderPreview`
   at AX 5).
-- Deviation: the plan says the badge letter is white on every line; line B uses black for
+- Deviation: the plan says the badge letter is white on every line; lines A and B use black for
   contrast. Badge styling is platform-native, not a Must match rule. Recorded in
   `docs/product/features/station-search.md` (*Platform-native*) and `docs/product/decisions.md`.
 
