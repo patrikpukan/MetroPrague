@@ -123,7 +123,8 @@ direction picker, departures, and Home. Fixes are in one commit on top of Task 6
   rows stack the badge and text vertically at accessibility sizes (checked with `RenderPreview`
   at AX 5).
 - Deviation: the plan says the badge letter is white on every line; line B uses black for
-  contrast. Badge styling is platform-native, not a Must match rule.
+  contrast. Badge styling is platform-native, not a Must match rule. Recorded in
+  `docs/product/features/station-search.md` (*Platform-native*) and `docs/product/decisions.md`.
 
 ## Definition of Done
 
@@ -145,4 +146,8 @@ direction picker, departures, and Home. Fixes are in one commit on top of Task 6
   stations (and recording station, platform, and departure counts), progress and counts in
   Settings, leaving Settings during a reload, and the offline error. The reload path is covered
   by `MetroDataStoreTests` with a fake transport.
-- iOS CI on the `xcode-27` runner has not run, since nothing is pushed yet.
+- **Hosted iOS CI is not green for the stack yet.** `.github/workflows/ios.yml` runs only for
+  pushes and pull requests targeting `main`, so only PR #15 gets a CI run. PRs #16–#20 target the
+  previous branch in the stack and get no run until they are retargeted to `main` after the PR
+  below them merges. Each PR's hosted result must be checked then. Local gates passed on every
+  commit.
