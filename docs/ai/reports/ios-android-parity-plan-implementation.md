@@ -90,3 +90,66 @@ Baseline before Task 1: `xcodebuild test` passed on `main` (`fa84bc4`).
   `.navigationBarDrawer(displayMode: .always)`. With the default placement on the search-role
   tab, iOS 27.2 showed no search field on iPhone.
 - Notes for Task 6: reuse `DirectionRow` with `stationName:` and an accessory button.
+
+## Task 6: Favorites on Home
+
+- Status: done.
+- Files: `ios/MetroPrague/Features/Home/` (`HomeModel` + `FavoriteRowContent`, `HomeView` with
+  private `HomeContent`), `RootTabView` (passes `openSearch`), `HomeModelTests`, and
+  `docs/product/`.
+- Verification: gates passed. Simulator (mock build): the Muzeum → Háje favorite starred in Task
+  5 survived a reinstall and relaunch; after adding Anděl → Zličín, Home listed both in insertion
+  order; labels changed between snapshots ("1 min" → "At station"); swipe-delete removed
+  Muzeum and the Remove button removed Anděl, neither confirmed; the empty state's
+  **Search stations** opened the Search tab.
+
+## Accessibility audits (all screens)
+
+Run once after Task 6 with the three skills from `ios/AGENTS.md`, on Settings, Search, the
+direction picker, departures, and Home. Fixes are in one commit on top of Task 6.
+
+- Sufficient contrast: **FAIL → fixed.** White on line B's yellow was 2.0:1 and white on line
+  A's green 3.2:1, which fails below 14 pt bold (the badge letter is 12–13 pt at the smallest
+  Dynamic Type sizes; caught in the PR #20 review). A and B now use black (6.6:1 and 10.5:1); C
+  keeps white (5.0:1).
+  Departure time labels and Settings text used `.secondary` (≈3.4:1 on white rows) and now use
+  the primary color. The selected line chip was white on blue (4.0:1, semibold) and now inverts
+  primary/background. The red error text (≈3.6:1) is now primary text with a red warning symbol.
+  The filled favorite star moved from yellow (≈1.6:1) to the accent color (4.0:1).
+- VoiceOver: **PASS** after adding the header trait to the departures "Line X, To Y" header.
+  The simulator's accessibility snapshots showed readable labels everywhere, "Add to favorites" /
+  "Remove from favorites" with the selected trait, chips as "Line A/B/C", and App version as
+  static text.
+- Dynamic Type: **FAIL → fixed.** At AX 5 the line badge clipped its letter and Home rows broke
+  station names mid-word. The badge now scales with `@ScaledMetric`, and direction and station
+  rows stack the badge and text vertically at accessibility sizes (checked with `RenderPreview`
+  at AX 5).
+- Deviation: the plan says the badge letter is white on every line; lines A and B use black for
+  contrast. Badge styling is platform-native, not a Must match rule. Recorded in
+  `docs/product/features/station-search.md` (*Platform-native*) and `docs/product/decisions.md`.
+
+## Definition of Done
+
+- All five feature rows in `docs/product/parity.md` show iOS `done`.
+- The four shared fixtures are asserted in `DepartureBoardParserTests`, and the Must match rules
+  are covered by tests or by the simulator checks recorded above.
+- Persistence matches Android's documented keys and formats (`favorites_v1` version-1 JSON, with
+  the exact string asserted; `theme_preference` values).
+- No request happens at launch (`MetroDataStoreTests.noRequestAtLaunch`); the only network path
+  is `MetroDataStore.reload()` from Settings.
+- Gates: `swift-format lint --strict` clean and `xcodebuild test` with
+  `SWIFT_TREAT_WARNINGS_AS_ERRORS=YES` passing on every commit in the stack.
+- No key, team ID, or live response is committed.
+
+## Open items
+
+- **Live-key check not run.** There is no `ios/Config/Secrets.xcconfig` in this checkout, so the
+  Task 2/3 acceptance checks that need a real Golemio key were not performed: a reload saving 58
+  stations (and recording station, platform, and departure counts), progress and counts in
+  Settings, leaving Settings during a reload, and the offline error. The reload path is covered
+  by `MetroDataStoreTests` with a fake transport.
+- **Hosted iOS CI is not green for the stack yet.** `.github/workflows/ios.yml` runs only for
+  pushes and pull requests targeting `main`, so only PR #15 gets a CI run. PRs #16–#20 target the
+  previous branch in the stack and get no run until they are retargeted to `main` after the PR
+  below them merges. Each PR's hosted result must be checked then. Local gates passed on every
+  commit.

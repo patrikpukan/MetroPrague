@@ -23,6 +23,8 @@ struct DirectionRow<Accessory: View>: View {
     var action: (() -> Void)? = nil
     @ViewBuilder var accessory: Accessory
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
         HStack(spacing: 12) {
             if let action {
@@ -37,7 +39,12 @@ struct DirectionRow<Accessory: View>: View {
     }
 
     private var label: some View {
-        HStack(spacing: 12) {
+        // At accessibility sizes the badge moves above the text, leaving the text the full width.
+        let layout =
+            dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
             LineBadge(line: line)
             VStack(alignment: .leading, spacing: 2) {
                 if let stationName {
@@ -46,9 +53,8 @@ struct DirectionRow<Accessory: View>: View {
                 }
                 Text("To \(destination)")
                 Text(display.label)
-                    .font(.subheadline)
+                    .font(.subheadline.weight(.medium))
                     .monospacedDigit()
-                    .foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
         }
@@ -69,7 +75,7 @@ struct FavoriteButton: View {
                 systemImage: isFavorite ? "star.fill" : "star"
             )
             .labelStyle(.iconOnly)
-            .foregroundStyle(isFavorite ? Color.yellow : Color.secondary)
+            .foregroundStyle(isFavorite ? Color.accentColor : Color.secondary)
             .imageScale(.large)
             .frame(minWidth: 44, minHeight: 44)
         }

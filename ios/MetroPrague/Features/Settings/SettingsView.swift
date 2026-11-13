@@ -44,7 +44,6 @@ private struct MetroDataSection: View {
                 Text(
                     "Stations and departures are saved on this device. Data updates only when you reload it. Departure snapshots expire after 5 minutes."
                 )
-                .foregroundStyle(.secondary)
                 ForEach(status.savedDataLines.indices, id: \.self) { index in
                     Text(status.savedDataLines[index])
                 }
@@ -57,15 +56,19 @@ private struct MetroDataSection: View {
                 }
             }
             if let message = status.errorMessage {
-                Text(message)
-                    .foregroundStyle(.red)
+                // The red symbol marks the error; the text keeps full contrast.
+                Label {
+                    Text(message)
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.red)
+                }
             }
             if status.canReload {
                 Button("Reload data", systemImage: "arrow.clockwise", action: reload)
                     .disabled(status.isReloading)
             } else {
                 Text("Data reload is unavailable in this build.")
-                    .foregroundStyle(.secondary)
             }
         }
         .onChange(of: status.error) { _, _ in

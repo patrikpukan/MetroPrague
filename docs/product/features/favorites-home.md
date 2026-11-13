@@ -17,6 +17,8 @@ Users can save individual directions from the station picker and see those stati
 
 Each platform may adapt the Home layout, card/list components, iconography, and navigation while preserving favorite identity, ordering, displayed values, empty-state action, and accessible remove/add meaning.
 
+iOS shows favorites in a `List` with the line badge, station, "To <destination>", and the next-departure label, refreshed every 15 seconds. Each row has a "Remove from favorites" button and a swipe action, neither confirmed. The empty state is a `ContentUnavailableView` whose **Search stations** button switches to the Search tab. As on Android, rows do not open departures. iOS stores favorites in `UserDefaults` under `favorites_v1` with the same version-1 JSON as Android.
+
 ## Android reference
 
 - ViewModel: `android/app/src/main/java/dev/pukan/metroprague/ui/screens/home/HomeViewModel.kt`
@@ -26,7 +28,10 @@ Each platform may adapt the Home layout, card/list components, iconography, and 
 
 ## iOS reference
 
-TBD
+- Model: `ios/MetroPrague/Features/Home/HomeModel.swift`
+- Store: `ios/MetroPrague/Data/FavoritesStore.swift`
+- UI/model: `ios/MetroPrague/Features/Home/HomeView.swift`, `ios/MetroPrague/Shared/DirectionRow.swift`, `ios/MetroPrague/Domain/FavoriteKey.swift`
+- Tests: `ios/MetroPragueTests/Features/Home/HomeModelTests.swift`, `ios/MetroPragueTests/Data/FavoritesStoreTests.swift`
 
 ## Open questions
 

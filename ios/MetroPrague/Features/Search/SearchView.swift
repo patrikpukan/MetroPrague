@@ -66,14 +66,23 @@ private struct StationRow: View {
     let station: Station
     let select: () -> Void
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
+        // At accessibility sizes the badges move below the name, leaving it the full width.
+        let layout =
+            dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout())
         Button(action: select) {
-            HStack {
+            layout {
                 Text(station.name)
                     .foregroundStyle(.primary)
-                Spacer()
-                ForEach(station.lines, id: \.line) { position in
-                    LineBadge(line: position.line)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    ForEach(station.lines, id: \.line) { position in
+                        LineBadge(line: position.line)
+                    }
                 }
             }
             .contentShape(.rect)
@@ -113,8 +122,9 @@ private struct LineFilterBar: View {
                 .padding(.vertical, 6)
         }
         .buttonStyle(.plain)
-        .foregroundStyle(isSelected ? Color.white : Color.primary)
-        .background(isSelected ? Color.accentColor : Color(.secondarySystemFill), in: .capsule)
+        // The selected chip inverts the label colors, which keeps full contrast in both modes.
+        .foregroundStyle(isSelected ? Color(.systemBackground) : Color.primary)
+        .background(isSelected ? Color.primary : Color(.secondarySystemFill), in: .capsule)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
