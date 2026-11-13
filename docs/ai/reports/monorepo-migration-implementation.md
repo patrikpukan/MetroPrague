@@ -17,7 +17,7 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
 | 5. Layered agent context | done | `docs: layer agent context into root and android/` |
 | 6. README split | done | `docs: split README into product and Android setup` |
 | 7. Shared product docs and Golemio report move | done | `docs(shared): add product feature specs and move Golemio report` |
-| 8. Shared fixtures | todo | |
+| 8. Shared fixtures | done | `test(shared): add Golemio departure-board fixtures` |
 | 9. Final verification | todo | |
 
 ## Task 1: Preflight and Worktree Cleanup
@@ -127,3 +127,13 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
   `MAX_DEPARTURES`); all relative links in the READMEs and new docs resolve; `grep -rn
   'golemio-api-integration'` hits only the migration plan, guide, and this log; `parity.md` lists
   all five specs.
+
+## Task 8: Shared Fixtures
+
+- Builder added `fixtures/golemio/departureboards/{metro-predicted-delay,mixed-transport-scheduled-only,empty-board,short-turn}.json`
+  (pretty-printed, UTF-8 literal), `fixtures/README.md` (purpose, naming rule, no-secrets rule,
+  per-fixture input context and assertions in one table, Android inline-copy follow-up), and the
+  Fixtures row in `metro-data-sync.md`.
+- Orchestrator verification: every fixture passes `python3 -m json.tool`; an independent script
+  parsed the four Kotlin raw strings and each equals its fixture (`True` x4); README assertions
+  match the test assertions in `GolemioDepartureBoardParserTest.kt`; links resolve.

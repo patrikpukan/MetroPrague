@@ -40,3 +40,4 @@ TBD
 | --- | --- |
 | Golemio API research | `docs/api/golemio.md` |
 | Android data sync implementation and tests | `android/app/src/main/java/dev/pukan/metroprague/data/repository/GolemioMetroDataRepository.kt`, `android/app/src/test/java/dev/pukan/metroprague/data/repository/GolemioMetroDataRepositoryTest.kt` |
+| Fixtures | [README](../../../fixtures/README.md), [departure-board samples](../../../fixtures/golemio/departureboards/) |

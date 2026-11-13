@@ -1,0 +1,40 @@
+{
+  "departures": [
+    {
+      "route": {
+        "type": 0,
+        "short_name": "9"
+      },
+      "trip": {
+        "id": "tram",
+        "headsign": "Spojovací",
+        "is_at_stop": false,
+        "is_canceled": false
+      },
+      "departure_timestamp": {
+        "scheduled": "2026-09-26T10:00:00Z"
+      }
+    },
+    {
+      "route": {
+        "type": 1,
+        "short_name": "B"
+      },
+      "trip": {
+        "id": "metro",
+        "headsign": "Zličín",
+        "is_at_stop": true,
+        "is_canceled": false
+      },
+      "departure_timestamp": {
+        "scheduled": "2026-09-26T10:03:00Z",
+        "predicted": null
+      },
+      "delay": {
+        "is_available": false,
+        "seconds": null
+      }
+    }
+  ],
+  "infotexts": []
+}
