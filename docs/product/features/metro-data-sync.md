@@ -18,6 +18,8 @@ Metro stations and departure boards are stored locally. The user starts a reload
 
 Each platform may adapt Settings navigation, progress presentation, persistence technology, and network stack. Preserve user-initiated reload from Settings, complete-snapshot replacement, failure retention, staleness semantics, request pacing/rate-limit behavior, metro-only scope, and a usable station/direction fallback before downloaded data exists. Android currently stores JSON in `files/datastore/metro-data.json`; it uses the bundled `MetroNetwork` for initial station data and a curated `MetroPlatformFallbacks` list for platforms absent from current trip patterns. Android enables live repositories only for debug builds with a nonblank local key; other builds use mock repositories. (`android/app/src/main/java/dev/pukan/metroprague/di/RepositoryModule.kt`, `android/app/src/main/java/dev/pukan/metroprague/data/golemio/MetroNetwork.kt`, `android/app/src/main/java/dev/pukan/metroprague/data/golemio/MetroPlatformFallbacks.kt`)
 
+iOS stores the snapshot as one JSON file, `Application Support/metro-data.json`, written atomically and excluded from backups. It keeps the catalogue's stations and platforms and the raw board responses, which are re-parsed on load; it does not store the raw GTFS routes, stops, or trip patterns, because nothing reads them. iOS goes live only in Debug builds with a Golemio key (only Debug builds can contain one) and otherwise uses generated mock departures. Its mock builds use the full bundled network (58 stations from `MetroNetwork`) rather than Android's 20-station mock list, which is test scaffolding, not spec behavior.
+
 ## Android reference
 
 - ViewModel: `android/app/src/main/java/dev/pukan/metroprague/ui/screens/settings/SettingsViewModel.kt`
@@ -28,7 +30,11 @@ Each platform may adapt Settings navigation, progress presentation, persistence 
 
 ## iOS reference
 
-TBD
+- Store: `ios/MetroPrague/Data/MetroDataStore.swift`
+- Data sources: `ios/MetroPrague/Data/MetroDataSource.swift`, `GolemioMetroDataSource.swift`, `MockMetroDataSource.swift`
+- Storage/network/fallback: `ios/MetroPrague/Data/Storage/SnapshotFileStore.swift`, `MetroSnapshot.swift`, `ios/MetroPrague/Data/Network/GolemioHTTPClient.swift`, `GolemioEndpoints.swift`, `CatalogueLoader.swift`, `MetroNetwork.swift`, `MetroPlatformFallbacks.swift`
+- Staleness: `ios/MetroPrague/Domain/DepartureBoard.swift` (`evaluated(at:)`)
+- Tests: `ios/MetroPragueTests/Data/MetroDataStoreTests.swift`, `ios/MetroPragueTests/Data/Network/GolemioHTTPClientTests.swift`, `CatalogueLoaderTests.swift`, `ios/MetroPragueTests/Data/Storage/SnapshotFileStoreTests.swift`, `ios/MetroPragueTests/Domain/DepartureBoardTests.swift`
 
 ## Open questions
 
