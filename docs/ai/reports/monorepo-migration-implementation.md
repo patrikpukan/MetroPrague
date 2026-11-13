@@ -14,11 +14,11 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
 | 2. Move the Android project into `android/` | done | `chore: move Android project into android/` |
 | 3. Root `.gitignore` | done | `chore: add root .gitignore` |
 | 4. Android CI with change detection | done (PR run pending) | `ci: change-detected Android workflow` |
-| 5. Layered agent context | done | `docs: layer agent context into root and android/` |
+| 5. Layered agent context | done | `chore: move AGENTS.md to android/`, `docs: layer agent context into root and android/` |
 | 6. README split | done | `docs: split README into product and Android setup` |
 | 7. Shared product docs and Golemio report move | done | `docs(shared): add product feature specs and move Golemio report` |
 | 8. Shared fixtures | done | `test(shared): add Golemio departure-board fixtures` |
-| 9. Final verification | todo | |
+| 9. Final verification | done | `docs: record monorepo migration verification` |
 
 ## Task 1: Preflight and Worktree Cleanup
 
@@ -137,3 +137,29 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
 - Orchestrator verification: every fixture passes `python3 -m json.tool`; an independent script
   parsed the four Kotlin raw strings and each equals its fixture (`True` x4); README assertions
   match the test assertions in `GolemioDepartureBoardParserTest.kt`; links resolve.
+
+## Task 9: Final Verification
+
+- `cd android && ./gradlew clean assembleDebug test`: BUILD SUCCESSFUL, **105 tests, 0 failures**
+  (same as the baseline).
+- `cd android && ./gradlew connectedAndroidTest` on the existing `Pixel_10_Pro` AVD
+  (`android-37.2`, arm64): BUILD SUCCESSFUL, **30 instrumentation tests, 0 failures**.
+- Stale-path grep (`(^|[^/])\./gradlew|app/src` over `*.md`, excluding historical plans and
+  reports): every hit is in `android/` docs, says to run from `android/`, or is an
+  `android/app/src/...` citation.
+- Relative Markdown links: 22 changed Markdown files checked, 0 broken.
+- `git diff main -M`: every file under `android/app/` is a 100% rename; no Android source or
+  resource content changes. Over the whole range `.gitignore` and `AGENTS.md` show as modified
+  plus new `android/` files because new root files reuse those paths; per-commit history keeps
+  the renames (`git log --follow android/AGENTS.md` and `android/app/build.gradle.kts` reach
+  pre-migration commits).
+
+## Deviations
+
+- Task 1: worktrees not removed (permission denied to the agent); owner runs the commands above.
+- Task 1: committed the untracked plan, guide, and iOS quickstart before starting; reverted local
+  `.idea` edits (saved as a patch outside the repository).
+- Task 5: split into two commits (`chore: move AGENTS.md to android/` as a pure rename, then the
+  edits) so `git log --follow android/AGENTS.md` keeps history.
+- Tasks 3/4 and 5/6 each shared one builder run (disjoint files); each task still has its own
+  commit.
