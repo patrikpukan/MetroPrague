@@ -61,3 +61,14 @@ Baseline before Task 1: `xcodebuild test` passed on `main` (`fa84bc4`).
   (1)"), not a button; "Data reload is unavailable in this build." shows without a key. The
   theme was set back to System afterwards.
 - The error message is also announced to VoiceOver when it appears (Android uses a live region).
+
+## Task 4: Station Departures
+
+- Status: done (reachable from Search in Task 5).
+- Files: `ios/MetroPrague/Features/Departures/` (`DepartureRoute`, `StationDeparturesModel` +
+  `StationDeparturesContent`, `StationDeparturesView`), `ios/MetroPrague/Data/FixedMetroDataSource.swift`
+  (Debug-only fake source for previews and tests), the Search tab's
+  `navigationDestination(for: DepartureRoute.self)`, model tests, and `docs/product/`.
+- Verification: gates passed; `RenderPreview` rendered the Departures, Stale, Unavailable, and
+  No service previews.
+- Notes for later tasks: push a `DepartureRoute` onto the Search tab's stack to open the screen.

@@ -16,6 +16,8 @@ Show the upcoming departures for a selected station and travel direction.
 
 Each platform may adapt the screen structure, navigation affordance, row/card presentation, typography, and motion. Preserve the selected direction, departure ordering and cutoff rules, time labels, and distinct empty/stale/unavailable states.
 
+iOS shows the departures in a `List` pushed onto the Search tab's `NavigationStack`, with the station name as the inline title, the line badge and "To <terminus>" as the section header, and the system back button. The stale, unavailable, and no-service states use `ContentUnavailableView` with distinct symbols; the stale state adds that snapshots expire after five minutes. Time labels refresh every 15 seconds through `TimelineView`.
+
 ## Android reference
 
 - ViewModel: `android/app/src/main/java/dev/pukan/metroprague/ui/screens/departures/StationDeparturesViewModel.kt`
@@ -25,7 +27,10 @@ Each platform may adapt the screen structure, navigation affordance, row/card pr
 
 ## iOS reference
 
-TBD
+- Model: `ios/MetroPrague/Features/Departures/StationDeparturesModel.swift`
+- UI/route: `ios/MetroPrague/Features/Departures/StationDeparturesView.swift`, `DepartureRoute.swift`
+- Formatting/model: `ios/MetroPrague/Domain/DepartureDisplay.swift`, `ios/MetroPrague/Shared/DepartureDisplay+Label.swift`, `ios/MetroPrague/Domain/DepartureBoard.swift`
+- Tests: `ios/MetroPragueTests/Features/Departures/StationDeparturesModelTests.swift`, `ios/MetroPragueTests/Domain/DepartureDisplayTests.swift`, `ios/MetroPragueTests/Domain/DepartureBoardTests.swift`
 
 ## Open questions
 
