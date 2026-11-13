@@ -12,8 +12,8 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
 | --- | --- | --- |
 | 1. Preflight and worktree cleanup | done (with deviation) | none (local only) |
 | 2. Move the Android project into `android/` | done | `chore: move Android project into android/` |
-| 3. Root `.gitignore` | todo | |
-| 4. Android CI with change detection | todo | |
+| 3. Root `.gitignore` | done | `chore: add root .gitignore` |
+| 4. Android CI with change detection | done (PR run pending) | `ci: change-detected Android workflow` |
 | 5. Layered agent context | todo | |
 | 6. README split | todo | |
 | 7. Shared product docs and Golemio report move | todo | |
@@ -62,3 +62,26 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
     the live Golemio repositories in a debuggable build.
   - `git check-ignore android/local.properties` matches `android/.gitignore`.
   - `git log --follow android/app/build.gradle.kts` checked after commit.
+
+## Task 3: Root `.gitignore`
+
+- Builder (shared run with Task 4) created the root `.gitignore`: `.DS_Store`, `/.idea/`,
+  `/.claude/worktrees/`, plus a comment pointing to the platform ignore files.
+- Orchestrator verification: after `cd android && ./gradlew assembleDebug`, `git status` showed no
+  build artifacts. `git check-ignore -v`: `android/local.properties` → `android/.gitignore:16`,
+  `android/build` → `android/.gitignore:12`, `.claude/worktrees/x` → `.gitignore:3`.
+
+## Task 4: Android CI with Change Detection
+
+- `git mv .github/workflows/build.yml .github/workflows/android.yml`; added the `changes` job
+  (native `git diff`, base from `pull_request.base.sha` or `before`, event values passed via
+  `env:`) and gated `build` with `if:`, `working-directory: android`, and the setup-java
+  `cache-dependency-path` entries. Action majors unchanged (`checkout@v4`, `setup-java@v4`).
+- Orchestrator fix: the builder piped `git diff | grep -q` under `set -o pipefail`, which can
+  report a match as no match when `grep` exits early and `git diff` gets SIGPIPE. Changed to
+  capture the diff first, then `grep` a here-string.
+- Orchestrator verification (detection step extracted from the YAML and run locally):
+  - `a0f8b40..53bda72` (docs-only) → `android=false`
+  - `53bda72..HEAD` (Android renames) → `android=true`
+  - all-zero base, empty base, unreachable base → `android=true`
+- `actionlint` is not installed; Ruby YAML parse passes. The GitHub PR run is checked in Phase 2.
