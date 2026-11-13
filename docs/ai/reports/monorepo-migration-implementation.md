@@ -16,7 +16,7 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
 | 4. Android CI with change detection | done (PR run pending) | `ci: change-detected Android workflow` |
 | 5. Layered agent context | done | `docs: layer agent context into root and android/` |
 | 6. README split | done | `docs: split README into product and Android setup` |
-| 7. Shared product docs and Golemio report move | todo | |
+| 7. Shared product docs and Golemio report move | done | `docs(shared): add product feature specs and move Golemio report` |
 | 8. Shared fixtures | todo | |
 | 9. Final verification | todo | |
 
@@ -109,3 +109,21 @@ Branch: `chore/monorepo-migration` (main checkout, no worktrees). Builders: `bui
   `parity.md` link, and a data and privacy summary.
 - Links to `docs/product/parity.md` and `docs/api/golemio.md` resolve after Task 7. The Android
   README still links the Golemio report at its old path; Task 7 updates it.
+
+## Task 7: Shared Product Docs and the Golemio Report Move
+
+- Builder: `git mv docs/ai/reports/golemio-api-integration.md docs/api/golemio.md`, labelled the
+  Android-specific paragraphs, updated the `android/README.md` link (agent docs and the iOS
+  quickstart had no links to the old path). Added five specs in `docs/product/features/`
+  (station-search 5 rules, favorites-home 6, station-departures 5, settings 5, metro-data-sync 7),
+  `docs/product/parity.md`, and `docs/product/decisions.md`.
+- Open question recorded in `metro-data-sync.md`: the plan and older docs call the five-minute
+  staleness a "prompt"; Android shows an inline stale label ("Reload departures in Settings").
+  The spec follows the code.
+- Orchestrator fix: restored a sentence in `docs/api/golemio.md` where the snapshot path had been
+  merged with the `RepositoryModule.kt` path.
+- Orchestrator verification: spot-checked constants against code (600 ms pacing, `Retry-After`
+  clamp 1–3600 s with 8 s default, freshness `0..299` s, `minutesAfter=60&limit=30`,
+  `MAX_DEPARTURES`); all relative links in the READMEs and new docs resolve; `grep -rn
+  'golemio-api-integration'` hits only the migration plan, guide, and this log; `parity.md` lists
+  all five specs.

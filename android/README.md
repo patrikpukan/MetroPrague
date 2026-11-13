@@ -110,6 +110,6 @@ the built-in network topology and prompt you to reload for departures. Reloading
 continues if you leave Settings; departure snapshots older than five minutes prompt you to reload. A
 failed or cancelled reload preserves the previous dataset and your favorites. API findings and
 implementation status are tracked in
-[the Golemio integration report](../docs/ai/reports/golemio-api-integration.md). Never commit API
+[the Golemio API reference](../docs/api/golemio.md). Never commit API
 keys or other secrets. For release, direct API access and a server proxy are both
 under consideration; a compiled app key is recoverable from an APK.
