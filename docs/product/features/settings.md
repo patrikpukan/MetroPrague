@@ -16,6 +16,8 @@ Settings exposes the persisted appearance choice and informational About rows.
 
 Each platform may adapt the settings navigation, selection control, dialog or sheet, About row presentation, typography, and motion. The theme choices, persistence behavior, release-note access, and noninteractive version semantics stay aligned.
 
+iOS uses a `Form`: the theme is a navigation-link `Picker` that returns to Settings on a choice, Changelog is a pushed list, and App version is a non-interactive `LabeledContent`. iOS has no Language row: Android's row is an unpersisted placeholder that the spec does not require, and iOS offers per-app language in the system Settings app. The iOS 1.0 changelog therefore lists "Theme preferences." instead of "Theme and language preferences."
+
 ## Android reference
 
 - ViewModel: `android/app/src/main/java/dev/pukan/metroprague/ui/screens/settings/SettingsViewModel.kt`, `android/app/src/main/java/dev/pukan/metroprague/ui/theme/AppThemeViewModel.kt`
@@ -25,7 +27,10 @@ Each platform may adapt the settings navigation, selection control, dialog or sh
 
 ## iOS reference
 
-TBD
+- Screen: `ios/MetroPrague/Features/Settings/SettingsView.swift`, `ChangelogView.swift`, `AppVersion.swift`, `MetroDataStatus+Text.swift`
+- Store: `ios/MetroPrague/Data/AppSettings.swift`, applied with `.preferredColorScheme` in `ios/MetroPrague/App/MetroPragueApp.swift`
+- Model: `ios/MetroPrague/Domain/ThemePreference.swift`
+- Tests: `ios/MetroPragueTests/Data/AppSettingsTests.swift`, `ios/MetroPragueTests/Domain/ThemePreferenceTests.swift`, `ios/MetroPragueTests/Features/Settings/`
 
 ## Open questions
 

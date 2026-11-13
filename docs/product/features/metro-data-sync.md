@@ -30,6 +30,7 @@ iOS stores the snapshot as one JSON file, `Application Support/metro-data.json`,
 
 ## iOS reference
 
+- Screen: `ios/MetroPrague/Features/Settings/SettingsView.swift` (Metro data section), `MetroDataStatus+Text.swift`
 - Store: `ios/MetroPrague/Data/MetroDataStore.swift`
 - Data sources: `ios/MetroPrague/Data/MetroDataSource.swift`, `GolemioMetroDataSource.swift`, `MockMetroDataSource.swift`
 - Storage/network/fallback: `ios/MetroPrague/Data/Storage/SnapshotFileStore.swift`, `MetroSnapshot.swift`, `ios/MetroPrague/Data/Network/GolemioHTTPClient.swift`, `GolemioEndpoints.swift`, `CatalogueLoader.swift`, `MetroNetwork.swift`, `MetroPlatformFallbacks.swift`

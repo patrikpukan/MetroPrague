@@ -1,10 +1,25 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ (%@)" : {
+
+    },
     "%@:%@" : {
 
     },
     "%lld min" : {
+
+    },
+    "%lld stations · %lld saved departures" : {
+
+    },
+    "About" : {
+
+    },
+    "App version" : {
+
+    },
+    "Appearance" : {
 
     },
     "At station" : {
@@ -13,13 +28,40 @@
     "Cancelled" : {
 
     },
+    "Changelog" : {
+
+    },
     "Coming soon." : {
+
+    },
+    "Could not reload metro data. Check your connection and try again. Previous saved data was kept." : {
+
+    },
+    "Dark" : {
+
+    },
+    "Data reload is unavailable in this build." : {
 
     },
     "Favorites" : {
 
     },
+    "Golemio rejected the API key. Previous saved data was kept." : {
+
+    },
+    "Golemio’s request limit was reached. Wait before trying again. Previous saved data was kept." : {
+
+    },
     "Home" : {
+
+    },
+    "Initial release." : {
+
+    },
+    "Last reload: %@" : {
+
+    },
+    "Light" : {
 
     },
     "Line %@" : {
@@ -28,13 +70,31 @@
     "Live departures unavailable" : {
 
     },
+    "Loading departures: %lld of %lld stations…" : {
+
+    },
+    "Loading routes, stations and platforms…" : {
+
+    },
+    "Metro Prague line and station search." : {
+
+    },
+    "Metro data" : {
+
+    },
     "No favorites yet" : {
+
+    },
+    "No metro data saved yet. Reload to load stations and departures." : {
 
     },
     "No service" : {
 
     },
     "Now" : {
+
+    },
+    "Reload data" : {
 
     },
     "Reload departures in Settings" : {
@@ -50,6 +110,21 @@
 
     },
     "Station search" : {
+
+    },
+    "Stations and departures are saved on this device. Data updates only when you reload it. Departure snapshots expire after 5 minutes." : {
+
+    },
+    "System default" : {
+
+    },
+    "Theme" : {
+
+    },
+    "Theme preferences." : {
+
+    },
+    "Version %@" : {
 
     }
   },
