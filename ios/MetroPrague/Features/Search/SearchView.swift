@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SearchView: View {
+    @Environment(MetroDataStore.self) private var metroData
+
     var body: some View {
         NavigationStack {
             ContentUnavailableView(
@@ -9,10 +11,14 @@ struct SearchView: View {
                 description: Text("Coming soon.")
             )
             .navigationTitle("Search")
+            .navigationDestination(for: DepartureRoute.self) { route in
+                StationDeparturesView(route: route, metroData: metroData)
+            }
         }
     }
 }
 
 #Preview {
     SearchView()
+        .environment(MetroDataStore(source: MockMetroDataSource()))
 }

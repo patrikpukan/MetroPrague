@@ -10,6 +10,6 @@ Last reviewed: 2026-11-13
 | --- | --- | --- | --- |
 | [Station search and direction picker](features/station-search.md) | done | not started | 2026-11-13 |
 | [Favorite station directions on Home](features/favorites-home.md) | done | not started | 2026-11-13 |
-| [Station departures](features/station-departures.md) | done | not started | 2026-11-13 |
+| [Station departures](features/station-departures.md) | done | in progress | 2026-11-13 |
 | [Settings](features/settings.md) | done | done | 2026-11-13 |
 | [Metro data sync](features/metro-data-sync.md) | done | done | 2026-11-13 |
