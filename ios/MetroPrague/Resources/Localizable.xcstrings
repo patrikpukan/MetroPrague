@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@:%@" : {
+
+    },
+    "%lld min" : {
+
+    },
+    "At station" : {
+
+    },
+    "Cancelled" : {
+
+    },
     "Coming soon." : {
 
     },
@@ -10,7 +22,22 @@
     "Home" : {
 
     },
+    "Line %@" : {
+
+    },
+    "Live departures unavailable" : {
+
+    },
     "No favorites yet" : {
+
+    },
+    "No service" : {
+
+    },
+    "Now" : {
+
+    },
+    "Reload departures in Settings" : {
 
     },
     "Search" : {

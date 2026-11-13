@@ -10,7 +10,10 @@ ios/
 ├── MetroPrague/             # app target (synchronized folder)
 │   ├── App/                 # @main app, AppConfiguration
 │   ├── Navigation/          # AppTab, RootTabView
+│   ├── Domain/              # pure, nonisolated value types and rules (no I/O)
+│   ├── Data/                # networking, parsing, storage, and app-level stores
 │   ├── Features/<Feature>/  # one folder per feature spec
+│   ├── Shared/              # views and helpers used by more than one feature
 │   └── Resources/           # Assets.xcassets, Localizable.xcstrings
 ├── MetroPragueTests/        # Swift Testing target (synchronized folder)
 │   └── Support/             # test helpers such as Fixtures
@@ -23,7 +26,8 @@ ios/
 - `MetroPrague/` and `MetroPragueTests/` are synchronized folders: files created there join their
   target automatically.
 - Feature code goes in `MetroPrague/Features/<Feature>/`. Data code (Golemio, storage) goes in
-  `MetroPrague/Data/`.
+  `MetroPrague/Data/`. Pure rules shared by data and screens go in `MetroPrague/Domain/`, and
+  views used by several features go in `MetroPrague/Shared/`.
 
 ## Xcode Tools
 
